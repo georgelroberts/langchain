@@ -102,11 +102,10 @@ class DocArrayIndex(VectorStore, ABC):
         query_doc = self.doc_cls(embedding=query_embedding)  # type: ignore
         docs, scores = self.doc_index.find(query_doc, search_field="embedding", limit=k)
 
-        result = [
+        return [
             (Document(page_content=doc.text, metadata=doc.metadata), score)
             for doc, score in zip(docs, scores)
         ]
-        return result
 
     def similarity_search(
         self, query: str, k: int = 4, **kwargs: Any
@@ -153,10 +152,9 @@ class DocArrayIndex(VectorStore, ABC):
             query_doc, search_field="embedding", limit=k
         ).documents
 
-        result = [
+        return [
             Document(page_content=doc.text, metadata=doc.metadata) for doc in docs
         ]
-        return result
 
     def max_marginal_relevance_search(
         self,
@@ -192,8 +190,7 @@ class DocArrayIndex(VectorStore, ABC):
         mmr_selected = maximal_marginal_relevance(
             np.array(query_embedding), docs.embedding, k=k
         )
-        results = [
+        return [
             Document(page_content=docs[idx].text, metadata=docs[idx].metadata)
             for idx in mmr_selected
         ]
-        return results

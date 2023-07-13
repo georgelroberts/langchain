@@ -110,7 +110,7 @@ class TestWeaviate:
         """Test end to end construction and search with uuids."""
         texts = ["foo", "bar", "baz"]
         # Weaviate replaces the object if the UUID already exists
-        uuids = [uuid.uuid5(uuid.NAMESPACE_DNS, "same-name") for text in texts]
+        uuids = [uuid.uuid5(uuid.NAMESPACE_DNS, "same-name") for _ in texts]
 
         metadatas = [{"page": i} for i in range(len(texts))]
         docsearch = Weaviate.from_texts(

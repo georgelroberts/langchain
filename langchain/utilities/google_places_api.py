@@ -85,8 +85,7 @@ class GooglePlacesAPIWrapper(BaseModel):
     def fetch_place_details(self, place_id: str) -> Optional[str]:
         try:
             place_details = self.google_map_client.place(place_id)
-            formatted_details = self.format_place_details(place_details)
-            return formatted_details
+            return self.format_place_details(place_details)
         except Exception as e:
             logging.error(f"An Error occurred while fetching place details: {e}")
             return None
@@ -102,11 +101,7 @@ class GooglePlacesAPIWrapper(BaseModel):
             )
             website = place_details.get("result", {}).get("website", "Unknown")
 
-            formatted_details = (
-                f"{name}\nAddress: {address}\n"
-                f"Phone: {phone_number}\nWebsite: {website}\n\n"
-            )
-            return formatted_details
+            return f"{name}\nAddress: {address}\nPhone: {phone_number}\nWebsite: {website}\n\n"
         except Exception as e:
             logging.error(f"An error occurred while formatting place details: {e}")
             return None

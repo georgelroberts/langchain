@@ -106,16 +106,13 @@ class PythonAstREPLTool(BaseTool):
             try:
                 with redirect_stdout(io_buffer):
                     ret = eval(module_end_str, self.globals, self.locals)
-                    if ret is None:
-                        return io_buffer.getvalue()
-                    else:
-                        return ret
+                    return io_buffer.getvalue() if ret is None else ret
             except Exception:
                 with redirect_stdout(io_buffer):
                     exec(module_end_str, self.globals, self.locals)
                 return io_buffer.getvalue()
         except Exception as e:
-            return "{}: {}".format(type(e).__name__, str(e))
+            return f"{type(e).__name__}: {str(e)}"
 
     async def _arun(
         self,

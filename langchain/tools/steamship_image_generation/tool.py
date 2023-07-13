@@ -11,6 +11,7 @@ To use this tool, you must first set as environment variables:
     STEAMSHIP_API_KEY
 ```
 """
+
 from __future__ import annotations
 
 from enum import Enum
@@ -25,10 +26,6 @@ from langchain.callbacks.manager import (
 from langchain.tools import BaseTool
 from langchain.tools.steamship_image_generation.utils import make_image_public
 from langchain.utils import get_from_dict_or_env
-
-if TYPE_CHECKING:
-    pass
-
 
 class ModelName(str, Enum):
     """Supported Image Models for generation."""

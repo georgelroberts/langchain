@@ -96,15 +96,15 @@ class Vectara(VectorStore):
         return True
 
     def _index_doc(self, doc_id: str, text: str, metadata: dict) -> bool:
-        request: dict[str, Any] = {}
-        request["customer_id"] = self._vectara_customer_id
-        request["corpus_id"] = self._vectara_corpus_id
-        request["document"] = {
-            "document_id": doc_id,
-            "metadataJson": json.dumps(metadata),
-            "section": [{"text": text, "metadataJson": json.dumps(metadata)}],
+        request: dict[str, Any] = {
+            "customer_id": self._vectara_customer_id,
+            "corpus_id": self._vectara_corpus_id,
+            "document": {
+                "document_id": doc_id,
+                "metadataJson": json.dumps(metadata),
+                "section": [{"text": text, "metadataJson": json.dumps(metadata)}],
+            },
         }
-
         response = self._session.post(
             headers=self._get_post_headers(),
             url="https://api.vectara.io/v1/index",
@@ -117,10 +117,9 @@ class Vectara(VectorStore):
 
         result = response.json()
         status_str = result["status"]["code"] if "status" in result else None
-        if status_code == 409 or (status_str and status_str == "ALREADY_EXISTS"):
-            return False
-        else:
-            return True
+        return status_code != 409 and (
+            not status_str or status_str != "ALREADY_EXISTS"
+        )
 
     def add_texts(
         self,
@@ -211,7 +210,7 @@ class Vectara(VectorStore):
         result = response.json()
         responses = result["responseSet"][0]["response"]
         vectara_default_metadata = ["lang", "len", "offset"]
-        docs = [
+        return [
             (
                 Document(
                     page_content=x["text"],
@@ -225,7 +224,6 @@ class Vectara(VectorStore):
             )
             for x in responses
         ]
-        return docs
 
     def similarity_search(
         self,

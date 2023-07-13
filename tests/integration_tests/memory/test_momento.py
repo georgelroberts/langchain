@@ -30,12 +30,11 @@ def message_history() -> Iterator[MomentoChatMessageHistory]:
         default_ttl=timedelta(seconds=30),
     )
     try:
-        chat_message_history = MomentoChatMessageHistory(
+        yield MomentoChatMessageHistory(
             session_id="my-test-session",
             cache_client=client,
             cache_name=cache_name,
         )
-        yield chat_message_history
     finally:
         client.delete_cache(cache_name)
 

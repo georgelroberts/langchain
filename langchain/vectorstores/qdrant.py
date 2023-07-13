@@ -527,11 +527,10 @@ class Qdrant(VectorStore):
         """
         if self.embeddings is not None:
             embedding = self.embeddings.embed_query(query)
+        elif self._embeddings_function is None:
+            raise ValueError("Neither of embeddings or embedding_function is set")
         else:
-            if self._embeddings_function is not None:
-                embedding = self._embeddings_function(query)
-            else:
-                raise ValueError("Neither of embeddings or embedding_function is set")
+            embedding = self._embeddings_function(query)
         return embedding.tolist() if hasattr(embedding, "tolist") else embedding
 
     def _embed_texts(self, texts: Iterable[str]) -> List[List[float]]:

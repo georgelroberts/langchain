@@ -106,7 +106,7 @@ def clean_email_body(body: str) -> str:
         from bs4 import BeautifulSoup
 
         try:
-            soup = BeautifulSoup(str(body), "html.parser")
+            soup = BeautifulSoup(body, "html.parser")
             body = soup.get_text()
             return str(body)
         except Exception as e:

@@ -27,9 +27,7 @@ def _collect_user_input(
 
         if stop and any(seq in line for seq in stop):
             break
-    # Combine all lines into a single string
-    multi_line_input = separator.join(lines)
-    return multi_line_input
+    return separator.join(lines)
 
 
 class HumanInputLLM(LLM):

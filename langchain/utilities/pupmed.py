@@ -78,17 +78,15 @@ class PubMedAPIWrapper(BaseModel):
         """
 
         url = (
-            self.base_url_esearch
-            + "db=pubmed&term="
-            + str({urllib.parse.quote(query)})
+            f"{self.base_url_esearch}db=pubmed&term={{urllib.parse.quote(query)}}"
             + f"&retmode=json&retmax={self.top_k_results}&usehistory=y"
         )
         result = urllib.request.urlopen(url)
         text = result.read().decode("utf-8")
         json_text = json.loads(text)
 
-        articles = []
         webenv = json_text["esearchresult"]["webenv"]
+        articles = []
         for uid in json_text["esearchresult"]["idlist"]:
             article = self.retrieve_article(uid, webenv)
             articles.append(article)
@@ -105,13 +103,7 @@ class PubMedAPIWrapper(BaseModel):
         return [self._transform_doc(d) for d in document_dicts]
 
     def retrieve_article(self, uid: str, webenv: str) -> dict:
-        url = (
-            self.base_url_efetch
-            + "db=pubmed&retmode=xml&id="
-            + uid
-            + "&webenv="
-            + webenv
-        )
+        url = f"{self.base_url_efetch}db=pubmed&retmode=xml&id={uid}&webenv={webenv}"
 
         retry = 0
         while True:
@@ -119,19 +111,18 @@ class PubMedAPIWrapper(BaseModel):
                 result = urllib.request.urlopen(url)
                 break
             except urllib.error.HTTPError as e:
-                if e.code == 429 and retry < self.max_retry:
-                    # Too Many Requests error
-                    # wait for an exponentially increasing amount of time
-                    print(
-                        f"Too Many Requests, "
-                        f"waiting for {self.sleep_time:.2f} seconds..."
-                    )
-                    time.sleep(self.sleep_time)
-                    self.sleep_time *= 2
-                    retry += 1
-                else:
+                if e.code != 429 or retry >= self.max_retry:
                     raise e
 
+                # Too Many Requests error
+                # wait for an exponentially increasing amount of time
+                print(
+                    f"Too Many Requests, "
+                    f"waiting for {self.sleep_time:.2f} seconds..."
+                )
+                time.sleep(self.sleep_time)
+                self.sleep_time *= 2
+                retry += 1
         xml_text = result.read().decode("utf-8")
 
         # Get title
@@ -161,11 +152,9 @@ class PubMedAPIWrapper(BaseModel):
                 xml_text.index(start_tag) + len(start_tag) : xml_text.index(end_tag)
             ]
 
-        # Return article as dictionary
-        article = {
+        return {
             "uid": uid,
             "title": title,
             "summary": abstract,
             "pub_date": pub_date,
         }
-        return article

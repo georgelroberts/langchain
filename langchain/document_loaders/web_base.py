@@ -104,12 +104,11 @@ class WebBaseLoader(BaseLoader):
                 except aiohttp.ClientConnectionError as e:
                     if i == retries - 1:
                         raise
-                    else:
-                        logger.warning(
-                            f"Error fetching {url} with attempt "
-                            f"{i + 1}/{retries}: {e}. Retrying..."
-                        )
-                        await asyncio.sleep(cooldown * backoff**i)
+                    logger.warning(
+                        f"Error fetching {url} with attempt "
+                        f"{i + 1}/{retries}: {e}. Retrying..."
+                    )
+                    await asyncio.sleep(cooldown * backoff**i)
         raise ValueError("retry count exceeded")
 
     async def _fetch_with_rate_limit(
@@ -153,10 +152,7 @@ class WebBaseLoader(BaseLoader):
         for i, result in enumerate(results):
             url = urls[i]
             if parser is None:
-                if url.endswith(".xml"):
-                    parser = "xml"
-                else:
-                    parser = self.default_parser
+                parser = "xml" if url.endswith(".xml") else self.default_parser
                 self._check_parser(parser)
             final_results.append(BeautifulSoup(result, parser))
 
@@ -166,11 +162,7 @@ class WebBaseLoader(BaseLoader):
         from bs4 import BeautifulSoup
 
         if parser is None:
-            if url.endswith(".xml"):
-                parser = "xml"
-            else:
-                parser = self.default_parser
-
+            parser = "xml" if url.endswith(".xml") else self.default_parser
         self._check_parser(parser)
 
         html_doc = self.session.get(url, **self.requests_kwargs)

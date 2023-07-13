@@ -31,7 +31,7 @@ class DynamoDBChatMessageHistory(BaseChatMessageHistory):
         self.session_id = session_id
 
     @property
-    def messages(self) -> List[BaseMessage]:  # type: ignore
+    def messages(self) -> List[BaseMessage]:    # type: ignore
         """Retrieve the messages from DynamoDB"""
         from botocore.exceptions import ClientError
 
@@ -43,13 +43,8 @@ class DynamoDBChatMessageHistory(BaseChatMessageHistory):
             else:
                 logger.error(error)
 
-        if response and "Item" in response:
-            items = response["Item"]["History"]
-        else:
-            items = []
-
-        messages = messages_from_dict(items)
-        return messages
+        items = response["Item"]["History"] if response and "Item" in response else []
+        return messages_from_dict(items)
 
     def add_message(self, message: BaseMessage) -> None:
         """Append the message to the record in DynamoDB"""

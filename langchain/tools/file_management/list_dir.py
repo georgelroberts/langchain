@@ -36,13 +36,12 @@ class ListDirectoryTool(BaseFileToolMixin, BaseTool):
         except FileValidationError:
             return INVALID_PATH_TEMPLATE.format(arg_name="dir_path", value=dir_path)
         try:
-            entries = os.listdir(dir_path_)
-            if entries:
+            if entries := os.listdir(dir_path_):
                 return "\n".join(entries)
             else:
                 return f"No files found in directory {dir_path}"
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

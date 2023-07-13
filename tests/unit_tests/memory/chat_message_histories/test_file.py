@@ -12,8 +12,7 @@ from langchain.schema import AIMessage, HumanMessage
 def file_chat_message_history() -> Generator[FileChatMessageHistory, None, None]:
     with tempfile.TemporaryDirectory() as temp_dir:
         file_path = Path(temp_dir) / "test_chat_history.json"
-        file_chat_message_history = FileChatMessageHistory(str(file_path))
-        yield file_chat_message_history
+        yield FileChatMessageHistory(str(file_path))
 
 
 def test_add_messages(file_chat_message_history: FileChatMessageHistory) -> None:

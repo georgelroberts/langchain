@@ -120,7 +120,7 @@ class CassandraChatMessageHistory(BaseChatMessageHistory):
             raise error
 
     @property
-    def messages(self) -> List[BaseMessage]:  # type: ignore
+    def messages(self) -> List[BaseMessage]:    # type: ignore
         """Retrieve the messages from Cassandra"""
         from cassandra import ReadFailure, ReadTimeout, Unavailable
 
@@ -133,14 +133,8 @@ class CassandraChatMessageHistory(BaseChatMessageHistory):
             logger.error("Unable to Retreive chat history messages from cassadra")
             raise error
 
-        if rows:
-            items = [json.loads(row.history) for row in rows]
-        else:
-            items = []
-
-        messages = messages_from_dict(items)
-
-        return messages
+        items = [json.loads(row.history) for row in rows] if rows else []
+        return messages_from_dict(items)
 
     def add_message(self, message: BaseMessage) -> None:
         """Append the message to the record in Cassandra"""

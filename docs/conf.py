@@ -1,4 +1,5 @@
 """Configuration file for the Sphinx documentation builder."""
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -29,7 +30,7 @@ author = "Harrison Chase"
 version = data["tool"]["poetry"]["version"]
 release = version
 
-html_title = project + " " + version
+html_title = f"{project} {version}"
 html_last_updated_fmt = "%b %d, %Y"
 
 

@@ -80,8 +80,7 @@ class GmailCreateDraft(GmailBaseTool):
                 .create(userId="me", body=create_message)
                 .execute()
             )
-            output = f'Draft created. Draft Id: {draft["id"]}'
-            return output
+            return f'Draft created. Draft Id: {draft["id"]}'
         except Exception as e:
             raise Exception(f"An error occurred: {e}")
 

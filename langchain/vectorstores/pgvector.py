@@ -55,16 +55,15 @@ class CollectionStore(BaseModel):
         Get or create a collection.
         Returns [Collection, bool] where the bool is True if the collection was created.
         """
-        created = False
         collection = cls.get_by_name(session, name)
         if collection:
+            created = False
             return collection, created
 
         collection = cls(name=name, cmetadata=cmetadata)
         session.add(collection)
         session.commit()
-        created = True
-        return collection, created
+        return collection, True
 
 
 class EmbeddingStore(BaseModel):
@@ -151,8 +150,7 @@ class PGVector(VectorStore):
 
     def connect(self) -> sqlalchemy.engine.Connection:
         engine = sqlalchemy.create_engine(self.connection_string)
-        conn = engine.connect()
-        return conn
+        return engine.connect()
 
     def create_vector_extension(self) -> None:
         try:
@@ -341,10 +339,9 @@ class PGVector(VectorStore):
             List of Documents most similar to the query and score for each
         """
         embedding = self.embedding_function.embed_query(query)
-        docs = self.similarity_search_with_score_by_vector(
+        return self.similarity_search_with_score_by_vector(
             embedding=embedding, k=k, filter=filter
         )
-        return docs
 
     def similarity_search_with_score_by_vector(
         self,
@@ -361,8 +358,8 @@ class PGVector(VectorStore):
 
             if filter is not None:
                 filter_clauses = []
+                IN = "in"
                 for key, value in filter.items():
-                    IN = "in"
                     if isinstance(value, dict) and IN in map(str.lower, value):
                         value_case_insensitive = {
                             k.lower(): v for k, v in value.items()
@@ -370,13 +367,11 @@ class PGVector(VectorStore):
                         filter_by_metadata = EmbeddingStore.cmetadata[key].astext.in_(
                             value_case_insensitive[IN]
                         )
-                        filter_clauses.append(filter_by_metadata)
                     else:
                         filter_by_metadata = EmbeddingStore.cmetadata[
                             key
                         ].astext == str(value)
-                        filter_clauses.append(filter_by_metadata)
-
+                    filter_clauses.append(filter_by_metadata)
                 filter_by = sqlalchemy.and_(filter_by, *filter_clauses)
 
             results: List[QueryResult] = (
@@ -394,7 +389,7 @@ class PGVector(VectorStore):
                 .all()
             )
 
-        docs = [
+        return [
             (
                 Document(
                     page_content=result.EmbeddingStore.document,
@@ -404,7 +399,6 @@ class PGVector(VectorStore):
             )
             for result in results
         ]
-        return docs
 
     def similarity_search_by_vector(
         self,
@@ -522,7 +516,7 @@ class PGVector(VectorStore):
 
         connection_string = cls.get_connection_string(kwargs)
 
-        store = cls(
+        return cls(
             connection_string=connection_string,
             collection_name=collection_name,
             embedding_function=embedding,
@@ -530,24 +524,20 @@ class PGVector(VectorStore):
             pre_delete_collection=pre_delete_collection,
         )
 
-        return store
-
     @classmethod
     def get_connection_string(cls, kwargs: Dict[str, Any]) -> str:
-        connection_string: str = get_from_dict_or_env(
+        if connection_string := get_from_dict_or_env(
             data=kwargs,
             key="connection_string",
             env_key="PGVECTOR_CONNECTION_STRING",
-        )
-
-        if not connection_string:
+        ):
+            return connection_string
+        else:
             raise ValueError(
                 "Postgres connection string is required"
                 "Either pass it as a parameter"
                 "or set the PGVECTOR_CONNECTION_STRING environment variable."
             )
-
-        return connection_string
 
     @classmethod
     def from_documents(

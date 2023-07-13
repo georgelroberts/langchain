@@ -220,28 +220,27 @@ class Beam(LLM):
             "beam deploy app.py", shell=True, capture_output=True, text=True
         )
 
-        if process.returncode == 0:
-            output = process.stdout
-            logger.info(output)
-            lines = output.split("\n")
-
-            for line in lines:
-                if line.startswith(" i  Send requests to: https://apps.beam.cloud/"):
-                    self.app_id = line.split("/")[-1]
-                    self.url = line.split(":")[1].strip()
-                    return self.app_id
-
-            raise ValueError(
-                f"""Failed to retrieve the appID from the deployment output.
-                Deployment output: {output}"""
-            )
-        else:
+        if process.returncode != 0:
             raise ValueError(f"Deployment failed. Error: {process.stderr}")
+        output = process.stdout
+        logger.info(output)
+        lines = output.split("\n")
+
+        for line in lines:
+            if line.startswith(" i  Send requests to: https://apps.beam.cloud/"):
+                self.app_id = line.split("/")[-1]
+                self.url = line.split(":")[1].strip()
+                return self.app_id
+
+        raise ValueError(
+            f"""Failed to retrieve the appID from the deployment output.
+                Deployment output: {output}"""
+        )
 
     @property
     def authorization(self) -> str:
         if self.beam_client_id:
-            credential_str = self.beam_client_id + ":" + self.beam_client_secret
+            credential_str = f"{self.beam_client_id}:{self.beam_client_secret}"
         else:
             credential_str = self.beam_client_secret
         return base64.b64encode(credential_str.encode()).decode()
@@ -253,12 +252,12 @@ class Beam(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
     ) -> str:
         """Call to Beam."""
-        url = "https://apps.beam.cloud/" + self.app_id if self.app_id else self.url
+        url = f"https://apps.beam.cloud/{self.app_id}" if self.app_id else self.url
         payload = {"prompt": prompt, "max_length": self.max_length}
         headers = {
             "Accept": "*/*",
             "Accept-Encoding": "gzip, deflate",
-            "Authorization": "Basic " + self.authorization,
+            "Authorization": f"Basic {self.authorization}",
             "Connection": "keep-alive",
             "Content-Type": "application/json",
         }

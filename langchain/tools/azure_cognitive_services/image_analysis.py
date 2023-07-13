@@ -139,11 +139,11 @@ class AzureCogsImageAnalysisTool(BaseTool):
     ) -> str:
         """Use the tool."""
         try:
-            image_analysis_result = self._image_analysis(query)
-            if not image_analysis_result:
+            if image_analysis_result := self._image_analysis(query):
+                return self._format_image_analysis_result(image_analysis_result)
+            else:
                 return "No good image analysis result was found"
 
-            return self._format_image_analysis_result(image_analysis_result)
         except Exception as e:
             raise RuntimeError(f"Error while running AzureCogsImageAnalysisTool: {e}")
 

@@ -101,9 +101,7 @@ def test_sitemap_metadata() -> None:
 def test_sitemap_metadata_extraction() -> None:
     def sitemap_metadata_two(meta: dict, content: Any) -> dict:
         title = content.find("title")
-        if title:
-            return {**meta, "title": title.get_text()}
-        return meta
+        return {**meta, "title": title.get_text()} if title else meta
 
     """Test sitemap loader."""
     loader = SitemapLoader(

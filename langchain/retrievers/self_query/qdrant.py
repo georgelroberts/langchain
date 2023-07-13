@@ -37,7 +37,7 @@ class QdrantTranslator(Visitor):
         from qdrant_client.http import models as rest
 
         self._validate_func(comparison.comparator)
-        attribute = self.metadata_key + "." + comparison.attribute
+        attribute = f"{self.metadata_key}.{comparison.attribute}"
         if comparison.comparator == Comparator.EQ:
             return rest.FieldCondition(
                 key=attribute, match=rest.MatchValue(value=comparison.value)

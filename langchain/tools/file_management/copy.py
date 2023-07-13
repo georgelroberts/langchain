@@ -49,7 +49,7 @@ class CopyFileTool(BaseFileToolMixin, BaseTool):
             shutil.copy2(source_path_, destination_path_, follow_symlinks=False)
             return f"File copied successfully from {source_path} to {destination_path}."
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

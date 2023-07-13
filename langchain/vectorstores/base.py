@@ -146,7 +146,7 @@ class VectorStore(ABC):
                 for doc, similarity in docs_and_similarities
                 if similarity >= score_threshold
             ]
-            if len(docs_and_similarities) == 0:
+            if not docs_and_similarities:
                 warnings.warn(
                     f"No relevant docs were retrieved using the relevance score\
                           threshold {score_threshold}"

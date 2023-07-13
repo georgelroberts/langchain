@@ -24,10 +24,10 @@ class ConditionalPromptSelector(BasePromptSelector):
     ] = Field(default_factory=list)
 
     def get_prompt(self, llm: BaseLanguageModel) -> BasePromptTemplate:
-        for condition, prompt in self.conditionals:
-            if condition(llm):
-                return prompt
-        return self.default_prompt
+        return next(
+            (prompt for condition, prompt in self.conditionals if condition(llm)),
+            self.default_prompt,
+        )
 
 
 def is_llm(llm: BaseLanguageModel) -> bool:

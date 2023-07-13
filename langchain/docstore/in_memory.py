@@ -14,8 +14,7 @@ class InMemoryDocstore(Docstore, AddableMixin):
 
     def add(self, texts: Dict[str, Document]) -> None:
         """Add texts to in memory dictionary."""
-        overlapping = set(texts).intersection(self._dict)
-        if overlapping:
+        if overlapping := set(texts).intersection(self._dict):
             raise ValueError(f"Tried to add ids that already exist: {overlapping}")
         self._dict = dict(self._dict, **texts)
 

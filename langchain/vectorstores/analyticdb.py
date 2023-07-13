@@ -56,16 +56,15 @@ class CollectionStore(BaseModel):
         Get or create a collection.
         Returns [Collection, bool] where the bool is True if the collection was created.
         """
-        created = False
         collection = cls.get_by_name(session, name)
         if collection:
+            created = False
             return collection, created
 
         collection = cls(name=name, cmetadata=cmetadata)
         session.add(collection)
         session.commit()
-        created = True
-        return collection, created
+        return collection, True
 
 
 class EmbeddingStore(BaseModel):
@@ -153,8 +152,7 @@ class AnalyticDB(VectorStore):
 
     def connect(self) -> sqlalchemy.engine.Connection:
         engine = sqlalchemy.create_engine(self.connection_string)
-        conn = engine.connect()
-        return conn
+        return engine.connect()
 
     def create_tables_if_not_exists(self) -> None:
         Base.metadata.create_all(self._conn)
@@ -266,10 +264,9 @@ class AnalyticDB(VectorStore):
             List of Documents most similar to the query and score for each
         """
         embedding = self.embedding_function.embed_query(query)
-        docs = self.similarity_search_with_score_by_vector(
+        return self.similarity_search_with_score_by_vector(
             embedding=embedding, k=k, filter=filter
         )
-        return docs
 
     def similarity_search_with_score_by_vector(
         self,
@@ -306,7 +303,7 @@ class AnalyticDB(VectorStore):
             .limit(k)
             .all()
         )
-        docs = [
+        return [
             (
                 Document(
                     page_content=result.EmbeddingStore.document,
@@ -316,7 +313,6 @@ class AnalyticDB(VectorStore):
             )
             for result in results
         ]
-        return docs
 
     def similarity_search_by_vector(
         self,
@@ -372,20 +368,18 @@ class AnalyticDB(VectorStore):
 
     @classmethod
     def get_connection_string(cls, kwargs: Dict[str, Any]) -> str:
-        connection_string: str = get_from_dict_or_env(
+        if connection_string := get_from_dict_or_env(
             data=kwargs,
             key="connection_string",
             env_key="PGVECTOR_CONNECTION_STRING",
-        )
-
-        if not connection_string:
+        ):
+            return connection_string
+        else:
             raise ValueError(
                 "Postgres connection string is required"
                 "Either pass it as a parameter"
                 "or set the PGVECTOR_CONNECTION_STRING environment variable."
             )
-
-        return connection_string
 
     @classmethod
     def from_documents(

@@ -170,9 +170,8 @@ class BaseTool(ABC, BaseModel, metaclass=ToolMetaclass):
     def args(self) -> dict:
         if self.args_schema is not None:
             return self.args_schema.schema()["properties"]
-        else:
-            schema = create_schema_from_function(self.name, self._run)
-            return schema.schema()["properties"]
+        schema = create_schema_from_function(self.name, self._run)
+        return schema.schema()["properties"]
 
     def _parse_input(
         self,
@@ -245,10 +244,7 @@ class BaseTool(ABC, BaseModel, metaclass=ToolMetaclass):
     ) -> Any:
         """Run the tool."""
         parsed_input = self._parse_input(tool_input)
-        if not self.verbose and verbose is not None:
-            verbose_ = verbose
-        else:
-            verbose_ = self.verbose
+        verbose_ = self.verbose if self.verbose or verbose is None else verbose
         callback_manager = CallbackManager.configure(
             callbacks, self.callbacks, verbose=verbose_
         )
@@ -272,10 +268,7 @@ class BaseTool(ABC, BaseModel, metaclass=ToolMetaclass):
                 run_manager.on_tool_error(e)
                 raise e
             elif isinstance(self.handle_tool_error, bool):
-                if e.args:
-                    observation = e.args[0]
-                else:
-                    observation = "Tool execution error"
+                observation = e.args[0] if e.args else "Tool execution error"
             elif isinstance(self.handle_tool_error, str):
                 observation = self.handle_tool_error
             elif callable(self.handle_tool_error):
@@ -309,10 +302,7 @@ class BaseTool(ABC, BaseModel, metaclass=ToolMetaclass):
     ) -> Any:
         """Run the tool asynchronously."""
         parsed_input = self._parse_input(tool_input)
-        if not self.verbose and verbose is not None:
-            verbose_ = verbose
-        else:
-            verbose_ = self.verbose
+        verbose_ = self.verbose if self.verbose or verbose is None else verbose
         callback_manager = AsyncCallbackManager.configure(
             callbacks, self.callbacks, verbose=verbose_
         )
@@ -336,10 +326,7 @@ class BaseTool(ABC, BaseModel, metaclass=ToolMetaclass):
                 await run_manager.on_tool_error(e)
                 raise e
             elif isinstance(self.handle_tool_error, bool):
-                if e.args:
-                    observation = e.args[0]
-                else:
-                    observation = "Tool execution error"
+                observation = e.args[0] if e.args else "Tool execution error"
             elif isinstance(self.handle_tool_error, str):
                 observation = self.handle_tool_error
             elif callable(self.handle_tool_error):
@@ -621,7 +608,7 @@ def tool(
         # if the argument is a function, then we use the function name as the tool name
         # Example usage: @tool
         return _make_with_name(args[0].__name__)(args[0])
-    elif len(args) == 0:
+    elif not args:
         # if there are no arguments, then we use the function name as the tool name
         # Example usage: @tool(return_direct=True)
         def _partial(func: Callable[[str], str]) -> BaseTool:

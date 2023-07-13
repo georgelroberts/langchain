@@ -95,7 +95,7 @@ class ElasticSearchBM25Retriever(BaseRetriever):
             )
         requests = []
         ids = []
-        for i, text in enumerate(texts):
+        for text in texts:
             _id = str(uuid.uuid4())
             request = {
                 "_op_type": "index",
@@ -115,10 +115,10 @@ class ElasticSearchBM25Retriever(BaseRetriever):
         query_dict = {"query": {"match": {"content": query}}}
         res = self.client.search(index=self.index_name, body=query_dict)
 
-        docs = []
-        for r in res["hits"]["hits"]:
-            docs.append(Document(page_content=r["_source"]["content"]))
-        return docs
+        return [
+            Document(page_content=r["_source"]["content"])
+            for r in res["hits"]["hits"]
+        ]
 
     async def aget_relevant_documents(self, query: str) -> List[Document]:
         raise NotImplementedError

@@ -167,16 +167,12 @@ class Tair(VectorStore):
         data_type = tairvector.DataType.Float32
         if "data_type" in kwargs:
             data_type = kwargs.pop("data_type")
-        index_params = {}
-        if "index_params" in kwargs:
-            index_params = kwargs.pop("index_params")
+        index_params = kwargs.pop("index_params") if "index_params" in kwargs else {}
         search_params = {}
         if "search_params" in kwargs:
             search_params = kwargs.pop("search_params")
 
-        keys = None
-        if "keys" in kwargs:
-            keys = kwargs.pop("keys")
+        keys = kwargs.pop("keys") if "keys" in kwargs else None
         try:
             tair_vector_store = cls(
                 embedding,

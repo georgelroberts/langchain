@@ -73,11 +73,7 @@ class WeaviateHybridSearchRetriever(BaseRetriever):
 
                 # If the UUID of one of the objects already exists
                 # then the existing objectwill be replaced by the new object.
-                if "uuids" in kwargs:
-                    _id = kwargs["uuids"][i]
-                else:
-                    _id = get_valid_uuid(uuid4())
-
+                _id = kwargs["uuids"][i] if "uuids" in kwargs else get_valid_uuid(uuid4())
                 batch.add_data_object(data_properties, self._index_name, _id)
                 ids.append(_id)
         return ids

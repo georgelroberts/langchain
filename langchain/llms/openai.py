@@ -198,8 +198,9 @@ class BaseOpenAI(BaseLLM):
                 )
                 extra[field_name] = values.pop(field_name)
 
-        invalid_model_kwargs = all_required_field_names.intersection(extra.keys())
-        if invalid_model_kwargs:
+        if invalid_model_kwargs := all_required_field_names.intersection(
+            extra.keys()
+        ):
             raise ValueError(
                 f"Parameters {invalid_model_kwargs} should be specified explicitly. "
                 f"Instead they were passed in as part of `model_kwargs` parameter."
@@ -319,10 +320,9 @@ class BaseOpenAI(BaseLLM):
                             logprobs=stream_resp["choices"][0]["logprobs"],
                         )
                     _update_response(response, stream_resp)
-                choices.extend(response["choices"])
             else:
                 response = completion_with_retry(self, prompt=_prompts, **params)
-                choices.extend(response["choices"])
+            choices.extend(response["choices"])
             if not self.streaming:
                 # Can't update token usage if streaming
                 update_token_usage(_keys, response, token_usage)
@@ -358,10 +358,9 @@ class BaseOpenAI(BaseLLM):
                             logprobs=stream_resp["choices"][0]["logprobs"],
                         )
                     _update_response(response, stream_resp)
-                choices.extend(response["choices"])
             else:
                 response = await acompletion_with_retry(self, prompt=_prompts, **params)
-                choices.extend(response["choices"])
+            choices.extend(response["choices"])
             if not self.streaming:
                 # Can't update token usage if streaming
                 update_token_usage(_keys, response, token_usage)
@@ -384,11 +383,10 @@ class BaseOpenAI(BaseLLM):
                     "max_tokens set to -1 not supported for multiple inputs."
                 )
             params["max_tokens"] = self.max_tokens_for_prompt(prompts[0])
-        sub_prompts = [
+        return [
             prompts[i : i + self.batch_size]
             for i in range(0, len(prompts), self.batch_size)
         ]
-        return sub_prompts
 
     def create_llm_result(
         self, choices: Any, prompts: List[str], token_usage: Dict[str, int]
@@ -433,9 +431,7 @@ class BaseOpenAI(BaseLLM):
                     yield token
         """
         params = self.prep_streaming_params(stop)
-        generator = self.client.create(prompt=prompt, **params)
-
-        return generator
+        return self.client.create(prompt=prompt, **params)
 
     def prep_streaming_params(self, stop: Optional[List[str]] = None) -> Dict[str, Any]:
         """Prepare the params for streaming."""

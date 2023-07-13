@@ -158,8 +158,7 @@ class BlackboardLoader(WebBaseLoader):
         """
         attachments = self._get_attachments(soup)
         self._download_attachments(attachments)
-        documents = self._load_documents()
-        return documents
+        return self._load_documents()
 
     def _get_attachments(self, soup: Any) -> List[str]:
         """Get all attachments from a page.
@@ -211,10 +210,7 @@ class BlackboardLoader(WebBaseLoader):
         loader = DirectoryLoader(
             path=self.folder_path, glob="*.pdf", loader_cls=PyPDFLoader  # type: ignore
         )
-        # Load the documents
-        documents = loader.load()
-        # Return all documents
-        return documents
+        return loader.load()
 
     def _get_paths(self, soup: Any) -> List[str]:
         """Get all relative paths in the navbar."""
@@ -268,9 +264,8 @@ class BlackboardLoader(WebBaseLoader):
         Raises:
             ValueError: If the filename could not be parsed.
         """
-        filename_matches = re.search(r"filename%2A%3DUTF-8%27%27(.+)", url)
-        if filename_matches:
-            filename = filename_matches.group(1)
+        if filename_matches := re.search(r"filename%2A%3DUTF-8%27%27(.+)", url):
+            filename = filename_matches[1]
         else:
             raise ValueError(f"Could not parse filename from {url}")
         if ".pdf" not in filename:

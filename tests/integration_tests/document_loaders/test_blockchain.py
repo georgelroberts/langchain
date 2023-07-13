@@ -73,7 +73,7 @@ def test_get_nfts_invalid_contract() -> None:
 
     assert (
         str(error_NoNfts.value)
-        == "No NFTs found for contract address " + contract_address
+        == f"No NFTs found for contract address {contract_address}"
     )
 
 

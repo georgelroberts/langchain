@@ -8,7 +8,7 @@ class AgentScratchPadChatPromptTemplate(ChatPromptTemplate):
     def _construct_agent_scratchpad(
         self, intermediate_steps: List[Tuple[AgentAction, str]]
     ) -> str:
-        if len(intermediate_steps) == 0:
+        if not intermediate_steps:
             return ""
         thoughts = ""
         for action, observation in intermediate_steps:

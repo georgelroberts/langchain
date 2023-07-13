@@ -17,10 +17,7 @@ class FakeLLM(LLM):
         run_manager: Optional[CallbackManagerForLLMRun] = None,
     ) -> str:
         """Return `foo` if longer than 10000 words, else `bar`."""
-        if len(prompt) > 10000:
-            return "foo"
-        else:
-            return "bar"
+        return "foo" if len(prompt) > 10000 else "bar"
 
     @property
     def _llm_type(self) -> str:

@@ -25,9 +25,7 @@ class NoOutputParser(BaseOutputParser[str]):
 
     def parse(self, text: str) -> str:
         cleaned_text = text.strip()
-        if cleaned_text == self.no_output_str:
-            return ""
-        return cleaned_text
+        return "" if cleaned_text == self.no_output_str else cleaned_text
 
 
 def _get_default_chain_prompt() -> PromptTemplate:
@@ -70,14 +68,11 @@ class LLMChainExtractor(BaseDocumentCompressor):
                 for doc in documents
             ]
         )
-        compressed_docs = []
-        for i, doc in enumerate(documents):
-            if len(outputs[i]) == 0:
-                continue
-            compressed_docs.append(
-                Document(page_content=outputs[i], metadata=doc.metadata)
-            )
-        return compressed_docs
+        return [
+            Document(page_content=outputs[i], metadata=doc.metadata)
+            for i, doc in enumerate(documents)
+            if len(outputs[i]) != 0
+        ]
 
     @classmethod
     def from_llm(

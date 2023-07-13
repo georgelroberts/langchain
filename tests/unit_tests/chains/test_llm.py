@@ -31,7 +31,7 @@ def fake_llm_chain() -> LLMChain:
 def test_serialization(fake_llm_chain: LLMChain) -> None:
     """Test serialization."""
     with TemporaryDirectory() as temp_dir:
-        file = temp_dir + "/llm.json"
+        file = f"{temp_dir}/llm.json"
         fake_llm_chain.save(file)
         loaded_chain = load_chain(file)
         assert loaded_chain == fake_llm_chain

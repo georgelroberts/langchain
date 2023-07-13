@@ -53,9 +53,7 @@ class _VertexAICommon(BaseModel):
         return self._enforce_stop_words(res.text, stop)
 
     def _enforce_stop_words(self, text: str, stop: Optional[List[str]]) -> str:
-        if stop:
-            return enforce_stop_tokens(text, stop)
-        return text
+        return enforce_stop_tokens(text, stop) if stop else text
 
     @property
     def _llm_type(self) -> str:
@@ -84,8 +82,7 @@ class VertexAI(_VertexAICommon, LLM):
             from vertexai.preview.language_models import TextGenerationModel
         except ImportError:
             raise_vertex_import_error()
-        tuned_model_name = values.get("tuned_model_name")
-        if tuned_model_name:
+        if tuned_model_name := values.get("tuned_model_name"):
             values["client"] = TextGenerationModel.get_tuned_model(tuned_model_name)
         else:
             values["client"] = TextGenerationModel.from_pretrained(values["model_name"])

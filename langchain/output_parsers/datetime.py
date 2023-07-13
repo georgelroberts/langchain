@@ -21,7 +21,7 @@ def _generate_random_datetime_strings(
     """
     examples = []
     delta = end_date - start_date
-    for i in range(n):
+    for _ in range(n):
         random_delta = random.uniform(0, delta.total_seconds())
         dt = start_date + timedelta(seconds=random_delta)
         date_string = dt.strftime(pattern)

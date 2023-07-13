@@ -122,7 +122,7 @@ class MosaicML(LLM):
         prompt = self._transform_prompt(prompt)
 
         payload = {"input_strings": [prompt]}
-        payload.update(_model_kwargs)
+        payload |= _model_kwargs
 
         # HTTP headers for authorization
         headers = {

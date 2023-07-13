@@ -198,10 +198,7 @@ class SQLiteEntityStore(BaseEntityStore):
         """
         cursor = self.conn.execute(query, (key,))
         result = cursor.fetchone()
-        if result is not None:
-            value = result[0]
-            return value
-        return default
+        return result[0] if result is not None else default
 
     def set(self, key: str, value: Optional[str]) -> None:
         if not value:
@@ -285,14 +282,11 @@ class ConversationEntityMemory(BaseChatMemory):
             entities = []
         else:
             entities = [w.strip() for w in output.split(",")]
-        entity_summaries = {}
-        for entity in entities:
-            entity_summaries[entity] = self.entity_store.get(entity, "")
+        entity_summaries = {
+            entity: self.entity_store.get(entity, "") for entity in entities
+        }
         self.entity_cache = entities
-        if self.return_messages:
-            buffer: Any = self.buffer[-self.k * 2 :]
-        else:
-            buffer = buffer_string
+        buffer = self.buffer[-self.k * 2 :] if self.return_messages else buffer_string
         return {
             self.chat_history_key: buffer,
             "entities": entity_summaries,

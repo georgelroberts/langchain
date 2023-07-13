@@ -131,9 +131,8 @@ class GenerativeAgentMemory(BaseMemory):
         score = self.chain(prompt).run(memory_content=memory_content).strip()
         if self.verbose:
             logger.info(f"Importance score: {score}")
-        match = re.search(r"^\D*(\d+)", score)
-        if match:
-            return (float(match.group(1)) / 10) * self.importance_weight
+        if match := re.search(r"^\D*(\d+)", score):
+            return float(match[1]) / 10 * self.importance_weight
         else:
             return 0.0
 
@@ -167,16 +166,16 @@ class GenerativeAgentMemory(BaseMemory):
         self, observation: str, now: Optional[datetime] = None
     ) -> List[Document]:
         """Fetch related memories."""
-        if now is not None:
-            with mock_now(now):
-                return self.memory_retriever.get_relevant_documents(observation)
-        else:
+        if now is None:
+            return self.memory_retriever.get_relevant_documents(observation)
+        with mock_now(now):
             return self.memory_retriever.get_relevant_documents(observation)
 
     def format_memories_detail(self, relevant_memories: List[Document]) -> str:
-        content = []
-        for mem in relevant_memories:
-            content.append(self._format_memory_detail(mem, prefix="- "))
+        content = [
+            self._format_memory_detail(mem, prefix="- ")
+            for mem in relevant_memories
+        ]
         return "\n".join([f"{mem}" for mem in content])
 
     def _format_memory_detail(self, memory: Document, prefix: str = "") -> str:

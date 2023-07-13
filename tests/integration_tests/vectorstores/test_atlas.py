@@ -11,7 +11,7 @@ def test_atlas() -> None:
     """Test end to end construction and search."""
     texts = ["foo", "bar", "baz"]
     docsearch = AtlasDB.from_texts(
-        name="langchain_test_project" + str(time.time()),
+        name=f"langchain_test_project{str(time.time())}",
         texts=texts,
         api_key=ATLAS_TEST_API_KEY,
         embedding=FakeEmbeddings(),
@@ -26,7 +26,7 @@ def test_atlas_with_metadatas() -> None:
     texts = ["foo", "bar", "baz"]
     metadatas = [{"page": str(i)} for i in range(len(texts))]
     docsearch = AtlasDB.from_texts(
-        name="langchain_test_project" + str(time.time()),
+        name=f"langchain_test_project{str(time.time())}",
         texts=texts,
         api_key=ATLAS_TEST_API_KEY,
         embedding=FakeEmbeddings(),

@@ -212,11 +212,7 @@ async def _tracer_initializer(session_name: Optional[str]) -> Optional[LangChain
     Returns:
         A LangChainTracer instance with an active session.
     """
-    if session_name:
-        tracer = LangChainTracer(session_name=session_name)
-        return tracer
-    else:
-        return None
+    return LangChainTracer(session_name=session_name) if session_name else None
 
 
 async def arun_on_examples(

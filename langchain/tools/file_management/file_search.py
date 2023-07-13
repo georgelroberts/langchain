@@ -58,7 +58,7 @@ class FileSearchTool(BaseFileToolMixin, BaseTool):
             else:
                 return f"No files found for pattern {pattern} in directory {dir_path}"
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

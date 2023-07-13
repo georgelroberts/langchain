@@ -37,7 +37,7 @@ class NotionDBLoader(BaseLoader):
         self.token = integration_token
         self.database_id = database_id
         self.headers = {
-            "Authorization": "Bearer " + self.token,
+            "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
             "Notion-Version": "2022-06-28",
         }
@@ -50,7 +50,7 @@ class NotionDBLoader(BaseLoader):
         """
         page_ids = self._retrieve_page_ids()
 
-        return list(self.load_page(page_id) for page_id in page_ids)
+        return [self.load_page(page_id) for page_id in page_ids]
 
     def _retrieve_page_ids(
         self, query_dict: Dict[str, Any] = {"page_size": 100}
@@ -72,9 +72,7 @@ class NotionDBLoader(BaseLoader):
 
             query_dict["start_cursor"] = data.get("next_cursor")
 
-        page_ids = [page["id"] for page in pages]
-
-        return page_ids
+        return [page["id"] for page in pages]
 
     def load_page(self, page_id: str) -> Document:
         """Read a page."""
@@ -127,14 +125,11 @@ class NotionDBLoader(BaseLoader):
                 if "rich_text" not in result_obj:
                     continue
 
-                cur_result_text_arr: List[str] = []
-
-                for rich_text in result_obj["rich_text"]:
-                    if "text" in rich_text:
-                        cur_result_text_arr.append(
-                            "\t" * num_tabs + rich_text["text"]["content"]
-                        )
-
+                cur_result_text_arr: List[str] = [
+                    "\t" * num_tabs + rich_text["text"]["content"]
+                    for rich_text in result_obj["rich_text"]
+                    if "text" in rich_text
+                ]
                 if result["has_children"]:
                     children_text = self._load_blocks(
                         result["id"], num_tabs=num_tabs + 1

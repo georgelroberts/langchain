@@ -63,10 +63,10 @@ class GmailSearch(GmailBaseTool):
                 .execute()
             )
             messages = thread_data["messages"]
-            thread["messages"] = []
-            for message in messages:
-                snippet = message["snippet"]
-                thread["messages"].append({"snippet": snippet, "id": message["id"]})
+            thread["messages"] = [
+                {"snippet": message["snippet"], "id": message["id"]}
+                for message in messages
+            ]
             results.append(thread)
 
         return results

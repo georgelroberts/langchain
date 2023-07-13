@@ -155,7 +155,7 @@ class RWKV(LLM, BaseModel):
 
         out: Any = None
 
-        while len(tokens) > 0:
+        while tokens:
             out, self.model_state = self.client.forward(
                 tokens[: self.CHUNK_LEN], self.model_state
             )

@@ -25,10 +25,7 @@ def load_llm_from_config(config: dict) -> BaseLLM:
 def load_llm(file: Union[str, Path]) -> BaseLLM:
     """Load LLM from file."""
     # Convert file to Path object.
-    if isinstance(file, str):
-        file_path = Path(file)
-    else:
-        file_path = file
+    file_path = Path(file) if isinstance(file, str) else file
     # Load from either json or yaml.
     if file_path.suffix == ".json":
         with open(file_path) as f:

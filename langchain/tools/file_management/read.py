@@ -41,7 +41,7 @@ class ReadFileTool(BaseFileToolMixin, BaseTool):
                 content = f.read()
             return content
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

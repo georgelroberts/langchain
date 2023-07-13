@@ -42,9 +42,7 @@ def _get_multi_prompt(
     if prefix is None:
         prefix = MULTI_DF_PREFIX
 
-    df_locals = {}
-    for i, dataframe in enumerate(dfs):
-        df_locals[f"df{i + 1}"] = dataframe
+    df_locals = {f"df{i + 1}": dataframe for i, dataframe in enumerate(dfs)}
     tools = [PythonAstREPLTool(locals=df_locals)]
 
     prompt = ZeroShotAgent.create_prompt(

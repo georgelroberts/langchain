@@ -26,13 +26,11 @@ class FakeEmbeddingsWithAdaDimension(FakeEmbeddings):
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """Return simple embeddings."""
-        return [
-            [float(1.0)] * (ADA_TOKEN_COUNT - 1) + [float(i)] for i in range(len(texts))
-        ]
+        return [[1.0] * (ADA_TOKEN_COUNT - 1) + [float(i)] for i in range(len(texts))]
 
     def embed_query(self, text: str) -> List[float]:
         """Return simple embeddings."""
-        return [float(1.0)] * (ADA_TOKEN_COUNT - 1) + [float(0.0)]
+        return [1.0] * (ADA_TOKEN_COUNT - 1) + [0.0]
 
 
 def test_analyticdb() -> None:

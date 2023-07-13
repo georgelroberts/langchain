@@ -89,10 +89,7 @@ class ZepChatMessageHistory(BaseChatMessageHistory):
     def zep_messages(self) -> List[Message]:
         """Retrieve summary from Zep memory"""
         zep_memory: Optional[Memory] = self._get_memory()
-        if not zep_memory:
-            return []
-
-        return zep_memory.messages
+        return [] if not zep_memory else zep_memory.messages
 
     @property
     def zep_summary(self) -> Optional[str]:

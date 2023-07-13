@@ -28,8 +28,8 @@ def test_llm_chain_extractor() -> None:
     ].page_content
     expected_returned = [0, 2, 4]
     expected_not_returned = [1, 3, 5]
-    assert all([texts[i] in actual for i in expected_returned])
-    assert all([texts[i] not in actual for i in expected_not_returned])
+    assert all(texts[i] in actual for i in expected_returned)
+    assert all(texts[i] not in actual for i in expected_not_returned)
 
 
 def test_llm_chain_extractor_empty() -> None:

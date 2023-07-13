@@ -12,10 +12,6 @@ from langchain.callbacks.manager import (
 from langchain.tools.playwright.base import BaseBrowserTool
 from langchain.tools.playwright.utils import aget_current_page, get_current_page
 
-if TYPE_CHECKING:
-    pass
-
-
 class ExtractHyperlinksToolInput(BaseModel):
     """Input for ExtractHyperlinksTool."""
 

@@ -22,7 +22,7 @@ def test_sessions(
     langchain_client: LangChainPlusClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Test sessions."""
-    session_names = set([session.name for session in langchain_client.list_sessions()])
+    session_names = {session.name for session in langchain_client.list_sessions()}
     new_session = f"Session {uuid4()}"
     assert new_session not in session_names
 
@@ -36,7 +36,7 @@ def test_sessions(
         example_tool({})
     session = langchain_client.read_session(session_name=new_session)
     assert session.name == new_session
-    session_names = set([sess.name for sess in langchain_client.list_sessions()])
+    session_names = {sess.name for sess in langchain_client.list_sessions()}
     assert new_session in session_names
     runs = list(langchain_client.list_runs(session_name=new_session))
     session_id_runs = list(langchain_client.list_runs(session_id=session.id))
@@ -46,9 +46,9 @@ def test_sessions(
 
     with pytest.raises(RetryError):
         langchain_client.read_session(session_name=new_session)
-    assert new_session not in set(
-        [sess.name for sess in langchain_client.list_sessions()]
-    )
+    assert new_session not in {
+        sess.name for sess in langchain_client.list_sessions()
+    }
     with pytest.raises(RetryError):
         langchain_client.delete_session(session_name=new_session)
     with pytest.raises(RetryError):
@@ -89,7 +89,7 @@ def test_feedback_cycle(
             session_name=os.environ["LANGCHAIN_SESSION"], execution_order=2
         )
     )
-    assert len(order_2) > 0
+    assert order_2
     langchain_client.create_feedback(str(order_2[0].id), "test score", score=0)
     feedback = langchain_client.create_feedback(str(runs[0].id), "test score", score=1)
     feedbacks = list(langchain_client.list_feedback(run_ids=[str(runs[0].id)]))
@@ -113,4 +113,4 @@ def test_feedback_cycle(
     for feedback in all_feedback:
         langchain_client.delete_feedback(str(feedback.id))
     feedbacks = list(langchain_client.list_feedback(run_ids=test_run_ids))
-    assert len(feedbacks) == 0
+    assert not feedbacks

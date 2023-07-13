@@ -112,4 +112,4 @@ class Replicate(LLM):
         inputs = {first_input_name: prompt, **self.input}
         iterator = replicate_python.run(self.model, input={**inputs})
 
-        return "".join([output for output in iterator])
+        return "".join(list(iterator))

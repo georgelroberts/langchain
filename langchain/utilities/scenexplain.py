@@ -62,7 +62,4 @@ class SceneXplainAPIWrapper(BaseSettings, BaseModel):
     def run(self, image: str) -> str:
         """Run SceneXplain image explainer."""
         description = self._describe_image(image)
-        if not description:
-            return "No description found."
-
-        return description
+        return "No description found." if not description else description

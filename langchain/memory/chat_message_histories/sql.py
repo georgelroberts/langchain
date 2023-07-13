@@ -49,15 +49,14 @@ class SQLChatMessageHistory(BaseChatMessageHistory):
         DynamicBase.metadata.create_all(self.engine)
 
     @property
-    def messages(self) -> List[BaseMessage]:  # type: ignore
+    def messages(self) -> List[BaseMessage]:    # type: ignore
         """Retrieve all messages from db"""
         with self.Session() as session:
             result = session.query(self.Message).where(
                 self.Message.session_id == self.session_id
             )
             items = [json.loads(record.message) for record in result]
-            messages = messages_from_dict(items)
-            return messages
+            return messages_from_dict(items)
 
     def add_message(self, message: BaseMessage) -> None:
         """Append the message to the record in db"""

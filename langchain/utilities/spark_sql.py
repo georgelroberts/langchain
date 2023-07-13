@@ -34,15 +34,13 @@ class SparkSQL:
         self._all_tables = set(self._get_all_table_names())
         self._include_tables = set(include_tables) if include_tables else set()
         if self._include_tables:
-            missing_tables = self._include_tables - self._all_tables
-            if missing_tables:
+            if missing_tables := self._include_tables - self._all_tables:
                 raise ValueError(
                     f"include_tables {missing_tables} not found in database"
                 )
         self._ignore_tables = set(ignore_tables) if ignore_tables else set()
         if self._ignore_tables:
-            missing_tables = self._ignore_tables - self._all_tables
-            if missing_tables:
+            if missing_tables := self._ignore_tables - self._all_tables:
                 raise ValueError(
                     f"ignore_tables {missing_tables} not found in database"
                 )
@@ -88,13 +86,12 @@ class SparkSQL:
         )
         # Ignore the data source provider and options to reduce the number of tokens.
         using_clause_index = statement.find("USING")
-        return statement[:using_clause_index] + ";"
+        return f"{statement[:using_clause_index]};"
 
     def get_table_info(self, table_names: Optional[List[str]] = None) -> str:
         all_table_names = self.get_usable_table_names()
         if table_names is not None:
-            missing_tables = set(table_names).difference(all_table_names)
-            if missing_tables:
+            if missing_tables := set(table_names).difference(all_table_names):
                 raise ValueError(f"table_names {missing_tables} not found in database")
             all_table_names = table_names
         tables = []
@@ -105,8 +102,7 @@ class SparkSQL:
                 table_info += f"\n{self._get_sample_spark_rows(table_name)}\n"
                 table_info += "*/"
             tables.append(table_info)
-        final_str = "\n\n".join(tables)
-        return final_str
+        return "\n\n".join(tables)
 
     def _get_sample_spark_rows(self, table: str) -> str:
         query = f"SELECT * FROM {table} LIMIT {self._sample_rows_in_table_info}"

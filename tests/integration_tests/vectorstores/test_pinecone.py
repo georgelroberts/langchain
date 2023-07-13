@@ -178,7 +178,7 @@ class TestPinecone:
         )
         output = docsearch.similarity_search("foo", k=20, namespace=f"{index_name}-1")
         # check that we don't get results from the other namespace
-        page_contents = sorted(set([o.page_content for o in output]))
+        page_contents = sorted({o.page_content for o in output})
         assert all(content in ["foo", "bar", "baz"] for content in page_contents)
         assert all(content not in ["foo2", "bar2", "baz2"] for content in page_contents)
 

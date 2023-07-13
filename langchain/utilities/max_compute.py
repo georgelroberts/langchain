@@ -70,7 +70,7 @@ class MaxComputeAPIWrapper:
             if reader.count == 0:
                 raise ValueError("Table contains no data.")
             for record in reader:
-                yield {k: v for k, v in record}
+                yield dict(record)
 
     def query(self, query: str) -> List[dict]:
         return list(self.lazy_query(query))

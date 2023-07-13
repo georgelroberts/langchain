@@ -91,9 +91,7 @@ Tool output: {output}"""
 
     @property
     def output_keys(self) -> List[str]:
-        if self.return_reasoning:
-            return ["score", "reasoning"]
-        return ["score"]
+        return ["score", "reasoning"] if self.return_reasoning else ["score"]
 
     def _call(
         self,

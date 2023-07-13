@@ -157,11 +157,7 @@ class HuggingFaceTextGenInference(LLM):
             text = ""
             for res in self.client.generate_stream(prompt, **params):
                 token = res.token
-                is_stop = False
-                for stop_seq in stop:
-                    if stop_seq in token.text:
-                        is_stop = True
-                        break
+                is_stop = any(stop_seq in token.text for stop_seq in stop)
                 if is_stop:
                     break
                 if not token.special:

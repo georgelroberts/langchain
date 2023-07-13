@@ -58,12 +58,13 @@ class NetworkxEntityGraph:
                 "Could not import networkx python package. "
                 "Please install it with `pip install networkx`."
             )
-        if graph is not None:
-            if not isinstance(graph, nx.DiGraph):
-                raise ValueError("Passed in graph is not of correct shape")
-            self._graph = graph
-        else:
+        if graph is None:
             self._graph = nx.DiGraph()
+
+        elif not isinstance(graph, nx.DiGraph):
+            raise ValueError("Passed in graph is not of correct shape")
+        else:
+            self._graph = graph
 
     @classmethod
     def from_gml(cls, gml_path: str) -> NetworkxEntityGraph:

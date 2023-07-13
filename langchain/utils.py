@@ -77,10 +77,10 @@ def stringify_value(val: Any) -> str:
 
 
 def stringify_dict(data: dict) -> str:
-    text = ""
-    for key, value in data.items():
-        text += key + ": " + stringify_value(value) + "\n"
-    return text
+    return "".join(
+        f"{key}: {stringify_value(value)}" + "\n"
+        for key, value in data.items()
+    )
 
 
 def comma_list(items: List[Any]) -> str:

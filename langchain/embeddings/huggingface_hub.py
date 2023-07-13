@@ -89,8 +89,7 @@ class HuggingFaceHubEmbeddings(BaseModel, Embeddings):
         # replace newlines, which can negatively affect performance.
         texts = [text.replace("\n", " ") for text in texts]
         _model_kwargs = self.model_kwargs or {}
-        responses = self.client(inputs=texts, params=_model_kwargs)
-        return responses
+        return self.client(inputs=texts, params=_model_kwargs)
 
     def embed_query(self, text: str) -> List[float]:
         """Call out to HuggingFaceHub's embedding endpoint for embedding query text.
@@ -101,5 +100,4 @@ class HuggingFaceHubEmbeddings(BaseModel, Embeddings):
         Returns:
             Embeddings for the text.
         """
-        response = self.embed_documents([text])[0]
-        return response
+        return self.embed_documents([text])[0]

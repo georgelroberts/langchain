@@ -70,10 +70,7 @@ def _strip_erroneous_leading_spaces(text: str) -> str:
     lines > 1. This function strips that space.
     """
     has_leading_space = all(not line or line[0] == " " for line in text.split("\n")[1:])
-    if has_leading_space:
-        return text.replace("\n ", "\n")
-    else:
-        return text
+    return text.replace("\n ", "\n") if has_leading_space else text
 
 
 class GooglePalm(BaseLLM, BaseModel):

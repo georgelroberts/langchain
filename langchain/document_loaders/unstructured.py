@@ -12,13 +12,13 @@ def satisfies_min_unstructured_version(min_version: str) -> bool:
     for the feature in question."""
     from unstructured.__version__ import __version__ as __unstructured_version__
 
-    min_version_tuple = tuple([int(x) for x in min_version.split(".")])
+    min_version_tuple = tuple(int(x) for x in min_version.split("."))
 
     # NOTE(MthwRobinson) - enables the loader to work when you're using pre-release
     # versions of unstructured like 0.4.17-dev1
     _unstructured_version = __unstructured_version__.split("-")[0]
     unstructured_version_tuple = tuple(
-        [int(x) for x in _unstructured_version.split(".")]
+        int(x) for x in _unstructured_version.split(".")
     )
 
     return unstructured_version_tuple >= min_version_tuple
@@ -70,7 +70,7 @@ class UnstructuredBaseLoader(BaseLoader, ABC):
         """Load file."""
         elements = self._get_elements()
         if self.mode == "elements":
-            docs: List[Document] = list()
+            docs: List[Document] = []
             for element in elements:
                 metadata = self._get_metadata()
                 # NOTE(MthwRobinson) - the attribute check is for backward compatibility

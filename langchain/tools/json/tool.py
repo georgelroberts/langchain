@@ -75,7 +75,7 @@ class JsonSpec(BaseModel):
                 return "Value is a large dictionary, should explore its keys directly"
             str_val = str(val)
             if len(str_val) > self.max_value_length:
-                str_val = str_val[: self.max_value_length] + "..."
+                str_val = f"{str_val[:self.max_value_length]}..."
             return str_val
         except Exception as e:
             return repr(e)
