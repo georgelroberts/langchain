@@ -50,5 +50,4 @@ class GraphQLAPIWrapper(BaseModel):
     def _execute_query(self, query: str) -> Dict[str, Any]:
         """Execute a GraphQL query and return the results."""
         document_node = self.gql_function(query)
-        result = self.gql_client.execute(document_node)
-        return result
+        return self.gql_client.execute(document_node)

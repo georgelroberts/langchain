@@ -77,7 +77,7 @@ def test_momento_cache_hit(
     llm = FakeLLM()
     params = llm.dict()
     params["stop"] = None
-    llm_string = str(sorted([(k, v) for k, v in params.items()]))
+    llm_string = str(sorted(list(params.items())))
 
     llm_generations = [
         [

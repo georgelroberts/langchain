@@ -64,9 +64,7 @@ def _default_score_normalizer(val: float) -> float:
 
 
 def _json_serializable(value: Any) -> Any:
-    if isinstance(value, datetime.datetime):
-        return value.isoformat()
-    return value
+    return value.isoformat() if isinstance(value, datetime.datetime) else value
 
 
 class Weaviate(VectorStore):
@@ -168,14 +166,13 @@ class Weaviate(VectorStore):
         """
         if self._by_text:
             return self.similarity_search_by_text(query, k, **kwargs)
-        else:
-            if self._embedding is None:
-                raise ValueError(
-                    "_embedding cannot be None for similarity_search when "
-                    "_by_text=False"
-                )
-            embedding = self._embedding.embed_query(query)
-            return self.similarity_search_by_vector(embedding, k, **kwargs)
+        if self._embedding is None:
+            raise ValueError(
+                "_embedding cannot be None for similarity_search when "
+                "_by_text=False"
+            )
+        embedding = self._embedding.embed_query(query)
+        return self.similarity_search_by_vector(embedding, k, **kwargs)
 
     def similarity_search_by_text(
         self, query: str, k: int = 4, **kwargs: Any
@@ -427,11 +424,7 @@ class Weaviate(VectorStore):
 
                 # If the UUID of one of the objects already exists
                 # then the existing objectwill be replaced by the new object.
-                if "uuids" in kwargs:
-                    _id = kwargs["uuids"][i]
-                else:
-                    _id = get_valid_uuid(uuid4())
-
+                _id = kwargs["uuids"][i] if "uuids" in kwargs else get_valid_uuid(uuid4())
                 # if an embedding strategy is not provided, we let
                 # weaviate create the embedding. Note that this will only
                 # work if weaviate has been installed with a vectorizer module

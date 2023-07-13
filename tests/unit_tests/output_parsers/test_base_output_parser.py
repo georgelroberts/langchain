@@ -43,5 +43,5 @@ def test_all_subclasses_implement_unique_type() -> None:
         except NotImplementedError:
             # This is handled in the previous test
             pass
-    dups = set([t for t in types if types.count(t) > 1])
+    dups = {t for t in types if types.count(t) > 1}
     assert not dups, f"Duplicate types: {dups}"

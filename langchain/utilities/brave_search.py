@@ -29,12 +29,12 @@ class BraveSearchWrapper(BaseModel):
         web_search_results = parsed_response.get("web", {}).get("results", [])
         final_results = []
         if isinstance(web_search_results, list):
-            for item in web_search_results:
-                final_results.append(
-                    {
-                        "title": item.get("title"),
-                        "link": item.get("url"),
-                        "snippet": item.get("description"),
-                    }
-                )
+            final_results.extend(
+                {
+                    "title": item.get("title"),
+                    "link": item.get("url"),
+                    "snippet": item.get("description"),
+                }
+                for item in web_search_results
+            )
         return json.dumps(final_results)

@@ -26,8 +26,9 @@ def _ensure_cache_exists(cache_client: momento.CacheClient, cache_name: str) -> 
     from momento.responses import CreateCache
 
     create_cache_response = cache_client.create_cache(cache_name)
-    if isinstance(create_cache_response, CreateCache.Success) or isinstance(
-        create_cache_response, CreateCache.CacheAlreadyExists
+    if isinstance(
+        create_cache_response,
+        (CreateCache.Success, CreateCache.CacheAlreadyExists),
     ):
         return None
     elif isinstance(create_cache_response, CreateCache.Error):

@@ -286,7 +286,7 @@ class TestTrelloLoader(unittest.TestCase):
         ]
 
         for text in texts:
-            self.assertTrue(text in documents[2].page_content, text + " is present.")
+            self.assertTrue(text in documents[2].page_content, f"{text} is present.")
 
         # Check all metadata is present in second Card
         self.assertEqual(

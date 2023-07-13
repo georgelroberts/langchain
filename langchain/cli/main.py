@@ -29,8 +29,7 @@ def pprint_services(services_status: List[Mapping[str, Union[str, List[str]]]]) 
             "Service": str(service["Service"]),
             "Status": str(service["Status"]),
         }
-        publishers = cast(List[Dict], service.get("Publishers", []))
-        if publishers:
+        if publishers := cast(List[Dict], service.get("Publishers", [])):
             service_status["PublishedPorts"] = ", ".join(
                 [str(publisher["PublishedPort"]) for publisher in publishers]
             )
@@ -51,7 +50,7 @@ def pprint_services(services_status: List[Mapping[str, Union[str, List[str]]]]) 
         service_message.append(service_str + state_str + ports_str)
 
     langchain_endpoint: str = "http://localhost:1984"
-    used_ngrok = any(["ngrok" in service["Service"] for service in services])
+    used_ngrok = any("ngrok" in service["Service"] for service in services)
     if used_ngrok:
         langchain_endpoint = get_ngrok_url(auth_token=None)
 

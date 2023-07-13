@@ -71,10 +71,7 @@ class AtlasDB(VectorStore):
         nomic.login(api_key)
 
         self._embedding_function = embedding_function
-        modality = "text"
-        if self._embedding_function is not None:
-            modality = "embedding"
-
+        modality = "embedding" if self._embedding_function is not None else "text"
         # Check if the project exists, create it if not
         self.project = AtlasProject(
             name=name,
@@ -202,11 +199,10 @@ class AtlasDB(VectorStore):
             )
             datas = self.project.get_data(ids=neighbors[0])
 
-        docs = [
+        return [
             Document(page_content=datas[i]["text"], metadata=datas[i])
             for i, neighbor in enumerate(neighbors)
         ]
-        return docs
 
     @classmethod
     def from_texts(
@@ -249,7 +245,7 @@ class AtlasDB(VectorStore):
             raise ValueError("`name` and `api_key` cannot be None.")
 
         # Inject relevant kwargs
-        all_index_kwargs = {"name": name + "_index", "indexed_field": "text"}
+        all_index_kwargs = {"name": f"{name}_index", "indexed_field": "text"}
         if index_kwargs is not None:
             for k, v in index_kwargs.items():
                 all_index_kwargs[k] = v

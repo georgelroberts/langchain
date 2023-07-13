@@ -94,10 +94,7 @@ class APIProperty(APIPropertyBase):
     @staticmethod
     def _cast_schema_list_type(schema: Schema) -> Optional[Union[str, Tuple[str, ...]]]:
         type_ = schema.type
-        if not isinstance(type_, list):
-            return type_
-        else:
-            return tuple(type_)
+        return type_ if not isinstance(type_, list) else tuple(type_)
 
     @staticmethod
     def _get_schema_type_for_enum(parameter: Parameter, schema: Schema) -> Enum:
@@ -137,9 +134,6 @@ class APIProperty(APIPropertyBase):
         elif schema_type in PRIMITIVE_TYPES:
             if schema.enum:
                 schema_type = APIProperty._get_schema_type_for_enum(parameter, schema)
-            else:
-                # Directly use the primitive type
-                pass
         else:
             raise NotImplementedError(f"Unsupported type: {schema_type}")
 
@@ -226,12 +220,11 @@ class APIRequestBodyProperty(APIPropertyBase):
         for prop_name, prop_schema in schema.properties.items():
             if isinstance(prop_schema, Reference):
                 ref_name = prop_schema.ref.split("/")[-1]
-                if ref_name not in references_used:
-                    references_used.append(ref_name)
-                    prop_schema = spec.get_referenced_schema(prop_schema)
-                else:
+                if ref_name in references_used:
                     continue
 
+                references_used.append(ref_name)
+                prop_schema = spec.get_referenced_schema(prop_schema)
             properties.append(
                 cls.from_schema(
                     schema=prop_schema,
@@ -254,12 +247,7 @@ class APIRequestBodyProperty(APIPropertyBase):
                 if ref_name not in references_used:
                     references_used.append(ref_name)
                     items = spec.get_referenced_schema(items)
-                else:
-                    pass
                 return f"Array<{ref_name}>"
-            else:
-                pass
-
             if isinstance(items, Schema):
                 array_type = cls.from_schema(
                     schema=items,
@@ -293,13 +281,7 @@ class APIRequestBodyProperty(APIPropertyBase):
             )
         elif schema_type == "array":
             schema_type = cls._process_array_schema(schema, name, spec, references_used)
-        elif schema_type in PRIMITIVE_TYPES:
-            # Use the primitive type directly
-            pass
-        elif schema_type is None:
-            # No typing specified/parsed. WIll map to 'any'
-            pass
-        else:
+        elif schema_type not in PRIMITIVE_TYPES and schema_type is not None:
             raise ValueError(f"Unsupported type: {schema_type}")
 
         return cls(
@@ -443,7 +425,6 @@ class APIOperation(BaseModel):
                     )
                     + " Ignoring optional parameter"
                 )
-                pass
         return properties
 
     @classmethod

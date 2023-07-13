@@ -56,8 +56,9 @@ def test_qdrant_add_documents(batch_size: int) -> None:
     # StatefulFakeEmbeddings return the same query embedding as the first document
     # embedding computed in `embedding.embed_documents`. Thus, "foo" embedding is the
     # same as "foobar" embedding
-    assert output == [Document(page_content="foobar")] or output == [
-        Document(page_content="foo")
+    assert output in [
+        [Document(page_content="foobar")],
+        [Document(page_content="foo")],
     ]
 
 

@@ -53,8 +53,7 @@ def _get_jinja2_variables_from_template(template: str) -> Set[str]:
         )
     env = Environment()
     ast = env.parse(template)
-    variables = meta.find_undeclared_variables(ast)
-    return variables
+    return meta.find_undeclared_variables(ast)
 
 
 DEFAULT_FORMATTER_MAPPING: Dict[str, Callable] = {
@@ -135,10 +134,9 @@ class BasePromptTemplate(BaseModel, ABC):
                 "internally, please rename."
             )
 
-        overall = set(values["input_variables"]).intersection(
+        if overall := set(values["input_variables"]).intersection(
             values["partial_variables"]
-        )
-        if overall:
+        ):
             raise ValueError(
                 f"Found overlapping input and partial variables: {overall}"
             )
@@ -159,7 +157,7 @@ class BasePromptTemplate(BaseModel, ABC):
             k: v if isinstance(v, str) else v()
             for k, v in self.partial_variables.items()
         }
-        return {**partial_kwargs, **kwargs}
+        return partial_kwargs | kwargs
 
     @abstractmethod
     def format(self, **kwargs: Any) -> str:
@@ -203,11 +201,7 @@ class BasePromptTemplate(BaseModel, ABC):
         if self.partial_variables:
             raise ValueError("Cannot save prompt with partial variables.")
         # Convert file to Path object.
-        if isinstance(file_path, str):
-            save_path = Path(file_path)
-        else:
-            save_path = file_path
-
+        save_path = Path(file_path) if isinstance(file_path, str) else file_path
         directory_path = save_path.parent
         directory_path.mkdir(parents=True, exist_ok=True)
 

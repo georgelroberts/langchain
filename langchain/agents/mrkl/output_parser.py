@@ -42,8 +42,8 @@ class MRKLOutputParser(AgentOutputParser):
                 )
             else:
                 raise OutputParserException(f"Could not parse LLM output: `{text}`")
-        action = match.group(1).strip()
-        action_input = match.group(2)
+        action = match[1].strip()
+        action_input = match[2]
 
         tool_input = action_input.strip(" ")
         # ensure if its a well formed SQL query we don't remove any trailing " chars

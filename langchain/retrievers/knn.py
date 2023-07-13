@@ -51,15 +51,14 @@ class KNNRetriever(BaseRetriever, BaseModel):
         denominator = np.max(similarities) - np.min(similarities) + 1e-6
         normalized_similarities = (similarities - np.min(similarities)) / denominator
 
-        top_k_results = [
+        return [
             Document(page_content=self.texts[row])
-            for row in sorted_ix[0 : self.k]
+            for row in sorted_ix[: self.k]
             if (
                 self.relevancy_threshold is None
                 or normalized_similarities[row] >= self.relevancy_threshold
             )
         ]
-        return top_k_results
 
     async def aget_relevant_documents(self, query: str) -> List[Document]:
         raise NotImplementedError

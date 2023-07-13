@@ -19,8 +19,7 @@ class CombinedMemory(BaseMemory):
     ) -> List[BaseMemory]:
         all_variables: Set[str] = set()
         for val in value:
-            overlap = all_variables.intersection(val.memory_variables)
-            if overlap:
+            if overlap := all_variables.intersection(val.memory_variables):
                 raise ValueError(
                     f"The same variables {overlap} are found in multiple"
                     "memory object, which is not allowed by CombinedMemory."

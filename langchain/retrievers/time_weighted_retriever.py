@@ -88,7 +88,7 @@ class TimeWeightedVectorStoreRetriever(BaseRetriever, BaseModel):
             for doc in self.memory_stream[-self.k :]
         }
         # If a doc is considered salient, update the salience score
-        docs_and_scores.update(self.get_salient_docs(query))
+        docs_and_scores |= self.get_salient_docs(query)
         rescored_docs = [
             (doc, self._get_combined_score(doc, relevance, current_time))
             for doc, relevance in docs_and_scores.values()

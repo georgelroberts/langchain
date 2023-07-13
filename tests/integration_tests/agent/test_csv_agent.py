@@ -45,7 +45,7 @@ def test_single_csv(csv: str) -> None:
     response = agent.run("How many rows in the csv? Give me a number.")
     result = re.search(r".*(4).*", response)
     assert result is not None
-    assert result.group(1) is not None
+    assert result[1] is not None
 
 
 def test_multi_csv(csv_list: list) -> None:
@@ -54,4 +54,4 @@ def test_multi_csv(csv_list: list) -> None:
     response = agent.run("How many combined rows in the two csvs? Give me a number.")
     result = re.search(r".*(6).*", response)
     assert result is not None
-    assert result.group(1) is not None
+    assert result[1] is not None

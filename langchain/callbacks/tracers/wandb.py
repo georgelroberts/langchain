@@ -235,30 +235,31 @@ class WandbTracer(BaseTracer):
 
         If not, will start a new run with the provided run_args.
         """
-        if self._wandb.run is None:
-            # Make a shallow copy of the run args, so we don't modify the original
-            run_args = self._run_args or {}  # type: ignore
-            run_args: dict = {**run_args}  # type: ignore
+        if self._wandb.run is not None:
+            return
+        # Make a shallow copy of the run args, so we don't modify the original
+        run_args = self._run_args or {}  # type: ignore
+        run_args: dict = {**run_args}  # type: ignore
 
-            # Prefer to run in silent mode since W&B has a lot of output
-            # which can be undesirable when dealing with text-based models.
-            if "settings" not in run_args:  # type: ignore
-                run_args["settings"] = {"silent": True}  # type: ignore
+        # Prefer to run in silent mode since W&B has a lot of output
+        # which can be undesirable when dealing with text-based models.
+        if "settings" not in run_args:  # type: ignore
+            run_args["settings"] = {"silent": True}  # type: ignore
 
-            # Start the run and add the stream table
-            self._wandb.init(**run_args)
-            if self._wandb.run is not None:
-                if should_print_url:
-                    run_url = self._wandb.run.settings.run_url
-                    self._wandb.termlog(
-                        f"Streaming LangChain activity to W&B at {run_url}\n"
-                        "`WandbTracer` is currently in beta.\n"
-                        "Please report any issues to "
-                        "https://github.com/wandb/wandb/issues with the tag "
-                        "`langchain`."
-                    )
+        # Start the run and add the stream table
+        self._wandb.init(**run_args)
+        if self._wandb.run is not None:
+            if should_print_url:
+                run_url = self._wandb.run.settings.run_url
+                self._wandb.termlog(
+                    f"Streaming LangChain activity to W&B at {run_url}\n"
+                    "`WandbTracer` is currently in beta.\n"
+                    "Please report any issues to "
+                    "https://github.com/wandb/wandb/issues with the tag "
+                    "`langchain`."
+                )
 
-                self._wandb.run._label(repo="langchain")
+            self._wandb.run._label(repo="langchain")
 
     def _persist_run(self, run: "Run") -> None:
         """Persist a run."""

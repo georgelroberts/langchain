@@ -93,7 +93,7 @@ class TestWeaviateHybridSearchRetriever:
         texts = ["foo", "bar", "baz"]
         metadatas = [{"page": i} for i in range(len(texts))]
         # Weaviate replaces the object if the UUID already exists
-        uuids = [uuid.uuid5(uuid.NAMESPACE_DNS, "same-name") for text in texts]
+        uuids = [uuid.uuid5(uuid.NAMESPACE_DNS, "same-name") for _ in texts]
 
         client = Client(weaviate_url)
 

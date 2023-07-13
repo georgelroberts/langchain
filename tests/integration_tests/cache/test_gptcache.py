@@ -52,7 +52,7 @@ def test_gptcache_caching(
     llm = FakeLLM()
     params = llm.dict()
     params["stop"] = None
-    llm_string = str(sorted([(k, v) for k, v in params.items()]))
+    llm_string = str(sorted(list(params.items())))
     langchain.llm_cache.update("foo", llm_string, [Generation(text="fizz")])
     _ = llm.generate(["foo", "bar", "foo"])
     cache_output = langchain.llm_cache.lookup("foo", llm_string)

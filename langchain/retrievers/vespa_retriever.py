@@ -28,9 +28,7 @@ class VespaRetriever(BaseRetriever):
 
         if not str(response.status_code).startswith("2"):
             raise RuntimeError(
-                "Could not retrieve data from Vespa. Error code: {}".format(
-                    response.status_code
-                )
+                f"Could not retrieve data from Vespa. Error code: {response.status_code}"
             )
 
         root = response.json["root"]
@@ -107,15 +105,14 @@ class VespaRetriever(BaseRetriever):
                 "yql should only be specified if both sources and _filter are not "
                 "specified."
             )
+        if metadata_fields == "*":
+            _fields = "*"
+            body["summary"] = "short"
         else:
-            if metadata_fields == "*":
-                _fields = "*"
-                body["summary"] = "short"
-            else:
-                _fields = ", ".join([content_field] + list(metadata_fields or []))
-            _sources = ", ".join(sources) if isinstance(sources, Sequence) else "*"
-            _filter = f" and {_filter}" if _filter else ""
-            yql = f"select {_fields} from sources {_sources} where userQuery(){_filter}"
+            _fields = ", ".join([content_field] + list(metadata_fields or []))
+        _sources = ", ".join(sources) if isinstance(sources, Sequence) else "*"
+        _filter = f" and {_filter}" if _filter else ""
+        yql = f"select {_fields} from sources {_sources} where userQuery(){_filter}"
         body["yql"] = yql
         if k:
             body["hits"] = k

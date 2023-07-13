@@ -52,10 +52,7 @@ class FakeChain(Chain):
         inputs: Dict[str, str],
         run_manager: Optional[CallbackManagerForChainRun] = None,
     ) -> Dict[str, str]:
-        if self.be_correct:
-            return {"bar": "baz"}
-        else:
-            return {"baz": "bar"}
+        return {"bar": "baz"} if self.be_correct else {"baz": "bar"}
 
 
 def test_bad_inputs() -> None:

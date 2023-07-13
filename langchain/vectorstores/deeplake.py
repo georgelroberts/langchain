@@ -51,7 +51,9 @@ def vector_search(
     nearest_indices = np.argsort(distances)
 
     nearest_indices = (
-        nearest_indices[::-1][:k] if distance_metric in ["cos"] else nearest_indices[:k]
+        nearest_indices[::-1][:k]
+        if distance_metric in {"cos"}
+        else nearest_indices[:k]
     )
 
     return nearest_indices.tolist(), distances[nearest_indices].tolist()
@@ -348,10 +350,7 @@ class DeepLake(VectorStore):
             for el in view
         ]
 
-        if return_score:
-            return [(doc, score) for doc, score in zip(docs, scores)]
-
-        return docs
+        return list(zip(docs, scores)) if return_score else docs
 
     def similarity_search(
         self, query: str, k: int = 4, **kwargs: Any

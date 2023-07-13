@@ -20,14 +20,12 @@ class RegexParser(BaseOutputParser):
 
     def parse(self, text: str) -> Dict[str, str]:
         """Parse the output of an LLM call."""
-        match = re.search(self.regex, text)
-        if match:
-            return {key: match.group(i + 1) for i, key in enumerate(self.output_keys)}
+        if match := re.search(self.regex, text):
+            return {key: match[i + 1] for i, key in enumerate(self.output_keys)}
+        if self.default_output_key is None:
+            raise ValueError(f"Could not parse output: {text}")
         else:
-            if self.default_output_key is None:
-                raise ValueError(f"Could not parse output: {text}")
-            else:
-                return {
-                    key: text if key == self.default_output_key else ""
-                    for key in self.output_keys
-                }
+            return {
+                key: text if key == self.default_output_key else ""
+                for key in self.output_keys
+            }

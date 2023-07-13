@@ -61,15 +61,12 @@ def http_paths_and_methods() -> List[Tuple[str, OpenAPISpec, str, str]]:
             with test_spec.open("r") as f:
                 spec = yaml.safe_load(f.read())
         parsed_spec = OpenAPISpec.from_file(test_spec)
-        for path, method in _get_paths_and_methods_from_spec_dictionary(spec):
-            http_paths_and_methods.append(
-                (
-                    spec_name,
-                    parsed_spec,
-                    path,
-                    method,
-                )
+        http_paths_and_methods.extend(
+            (spec_name, parsed_spec, path, method)
+            for path, method in _get_paths_and_methods_from_spec_dictionary(
+                spec
             )
+        )
     return http_paths_and_methods
 
 

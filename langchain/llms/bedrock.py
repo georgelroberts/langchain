@@ -18,7 +18,7 @@ class LLMInputOutputAdapter:
         cls, provider: str, prompt: str, model_kwargs: Dict[str, Any]
     ) -> Dict[str, Any]:
         input_body = {**model_kwargs}
-        if provider == "anthropic" or provider == "ai21":
+        if provider in {"anthropic", "ai21"}:
             input_body["prompt"] = prompt
         else:
             input_body["inputText"] = prompt

@@ -57,7 +57,7 @@ class PlaywrightURLLoader(BaseLoader):
         from playwright.sync_api import sync_playwright
         from unstructured.partition.html import partition_html
 
-        docs: List[Document] = list()
+        docs: List[Document] = []
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=self.headless)

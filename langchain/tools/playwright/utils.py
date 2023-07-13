@@ -16,10 +16,7 @@ async def aget_current_page(browser: AsyncBrowser) -> AsyncPage:
         context = await browser.new_context()
         return await context.new_page()
     context = browser.contexts[0]  # Assuming you're using the default browser context
-    if not context.pages:
-        return await context.new_page()
-    # Assuming the last page in the list is the active one
-    return context.pages[-1]
+    return await context.new_page() if not context.pages else context.pages[-1]
 
 
 def get_current_page(browser: SyncBrowser) -> SyncPage:
@@ -27,10 +24,7 @@ def get_current_page(browser: SyncBrowser) -> SyncPage:
         context = browser.new_context()
         return context.new_page()
     context = browser.contexts[0]  # Assuming you're using the default browser context
-    if not context.pages:
-        return context.new_page()
-    # Assuming the last page in the list is the active one
-    return context.pages[-1]
+    return context.new_page() if not context.pages else context.pages[-1]
 
 
 def create_async_playwright_browser(headless: bool = True) -> AsyncBrowser:

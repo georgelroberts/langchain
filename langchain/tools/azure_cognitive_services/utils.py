@@ -11,10 +11,7 @@ def detect_file_src_type(file_path: str) -> str:
         return "local"
 
     parsed_url = urlparse(file_path)
-    if parsed_url.scheme and parsed_url.netloc:
-        return "remote"
-
-    return "invalid"
+    return "remote" if parsed_url.scheme and parsed_url.netloc else "invalid"
 
 
 def download_audio_from_url(audio_url: str) -> str:

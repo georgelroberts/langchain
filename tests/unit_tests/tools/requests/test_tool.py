@@ -25,27 +25,27 @@ class _MockTextRequestsWrapper(TextRequestsWrapper):
 
     @staticmethod
     def post(url: str, data: Dict[str, Any], **kwargs: Any) -> str:
-        return f"post {str(data)}"
+        return f"post {data}"
 
     @staticmethod
     async def apost(url: str, data: Dict[str, Any], **kwargs: Any) -> str:
-        return f"apost {str(data)}"
+        return f"apost {data}"
 
     @staticmethod
     def patch(url: str, data: Dict[str, Any], **kwargs: Any) -> str:
-        return f"patch {str(data)}"
+        return f"patch {data}"
 
     @staticmethod
     async def apatch(url: str, data: Dict[str, Any], **kwargs: Any) -> str:
-        return f"apatch {str(data)}"
+        return f"apatch {data}"
 
     @staticmethod
     def put(url: str, data: Dict[str, Any], **kwargs: Any) -> str:
-        return f"put {str(data)}"
+        return f"put {data}"
 
     @staticmethod
     async def aput(url: str, data: Dict[str, Any], **kwargs: Any) -> str:
-        return f"aput {str(data)}"
+        return f"aput {data}"
 
     @staticmethod
     def delete(url: str, **kwargs: Any) -> str:

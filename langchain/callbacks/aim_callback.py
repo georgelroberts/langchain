@@ -209,7 +209,7 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.starts += 1
 
         resp = {"action": "on_llm_start"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         prompts_res = deepcopy(prompts)
 
@@ -227,7 +227,7 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.ends += 1
 
         resp = {"action": "on_llm_end"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         response_res = deepcopy(response)
 
@@ -264,7 +264,7 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.starts += 1
 
         resp = {"action": "on_chain_start"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         inputs_res = deepcopy(inputs)
 
@@ -280,7 +280,7 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.ends += 1
 
         resp = {"action": "on_chain_end"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         outputs_res = deepcopy(outputs)
 
@@ -305,7 +305,7 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.starts += 1
 
         resp = {"action": "on_tool_start"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         self._run.track(aim.Text(input_str), name="on_tool_start", context=resp)
 
@@ -317,7 +317,7 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.ends += 1
 
         resp = {"action": "on_tool_end"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         self._run.track(aim.Text(output), name="on_tool_end", context=resp)
 
@@ -343,13 +343,11 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
         self.ends += 1
 
         resp = {"action": "on_agent_finish"}
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         finish_res = deepcopy(finish)
 
-        text = "OUTPUT:\n{}\n\nLOG:\n{}".format(
-            finish_res.return_values["output"], finish_res.log
-        )
+        text = f'OUTPUT:\n{finish_res.return_values["output"]}\n\nLOG:\n{finish_res.log}'
         self._run.track(aim.Text(text), name="on_agent_finish", context=resp)
 
     def on_agent_action(self, action: AgentAction, **kwargs: Any) -> Any:
@@ -363,13 +361,11 @@ class AimCallbackHandler(BaseMetadataCallbackHandler, BaseCallbackHandler):
             "action": "on_agent_action",
             "tool": action.tool,
         }
-        resp.update(self.get_custom_callback_meta())
+        resp |= self.get_custom_callback_meta()
 
         action_res = deepcopy(action)
 
-        text = "TOOL INPUT:\n{}\n\nLOG:\n{}".format(
-            action_res.tool_input, action_res.log
-        )
+        text = f"TOOL INPUT:\n{action_res.tool_input}\n\nLOG:\n{action_res.log}"
         self._run.track(aim.Text(text), name="on_agent_action", context=resp)
 
     def flush_tracker(

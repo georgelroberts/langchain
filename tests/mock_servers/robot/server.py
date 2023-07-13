@@ -128,9 +128,7 @@ async def goto(x: int, y: int, z: int, cautiousness: Cautiousness) -> Dict[str, 
 async def get_state(
     fields: List[StateItems] = Query(..., description="List of state items to return")
 ) -> Dict[str, Any]:
-    state = {}
-    for field in fields:
-        state[field.value] = _ROBOT_STATE[field.value]
+    state = {field.value: _ROBOT_STATE[field.value] for field in fields}
     return {"state": state}
 
 

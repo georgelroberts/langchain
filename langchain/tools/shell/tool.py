@@ -44,9 +44,7 @@ def _get_default_bash_processs() -> BashProcess:
 def _get_platform() -> str:
     """Get platform."""
     system = platform.system()
-    if system == "Darwin":
-        return "MacOS"
-    return system
+    return "MacOS" if system == "Darwin" else system
 
 
 class ShellTool(BaseTool):

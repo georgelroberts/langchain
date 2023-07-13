@@ -117,8 +117,7 @@ class AzureCogsSpeech2TextTool(BaseTool):
     ) -> str:
         """Use the tool."""
         try:
-            text = self._speech2text(query, self.speech_language)
-            return text
+            return self._speech2text(query, self.speech_language)
         except Exception as e:
             raise RuntimeError(f"Error while running AzureCogsSpeech2TextTool: {e}")
 

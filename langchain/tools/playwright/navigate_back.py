@@ -27,9 +27,7 @@ class NavigateBackTool(BaseBrowserTool):
         if self.sync_browser is None:
             raise ValueError(f"Synchronous browser not provided to {self.name}")
         page = get_current_page(self.sync_browser)
-        response = page.go_back()
-
-        if response:
+        if response := page.go_back():
             return (
                 f"Navigated back to the previous page with URL '{response.url}'."
                 f" Status code {response.status}"

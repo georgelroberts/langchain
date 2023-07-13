@@ -58,7 +58,7 @@ def test_invalid_suffix() -> None:
 def test_success(mocked_responses: responses.RequestsMock, ref: str) -> None:
     """Test that a valid hub path is loaded correctly with and without a ref."""
     path = "chains/path/chain.json"
-    lc_path_prefix = f"lc{('@' + ref) if ref else ''}://"
+    lc_path_prefix = f"lc{f'@{ref}' if ref else ''}://"
     valid_suffixes = {"json"}
     body = json.dumps({"foo": "bar"})
     ref = ref or DEFAULT_REF

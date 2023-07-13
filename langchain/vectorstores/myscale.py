@@ -17,10 +17,7 @@ logger = logging.getLogger()
 
 
 def has_mul_sub_str(s: str, *args: Any) -> bool:
-    for a in args:
-        if a not in s:
-            return False
-    return True
+    return all(a in s for a in args)
 
 
 class MyScaleSettings(BaseSettings):
@@ -126,10 +123,7 @@ class MyScale(VectorStore):
             # Just in case if tqdm is not installed
             self.pgbar = lambda x: x
         super().__init__()
-        if config is not None:
-            self.config = config
-        else:
-            self.config = MyScaleSettings()
+        self.config = config if config is not None else MyScaleSettings()
         assert self.config
         assert self.config.host and self.config.port
         assert (
@@ -189,13 +183,12 @@ class MyScale(VectorStore):
         for n in transac:
             n = ",".join([f"'{self.escape_str(str(_n))}'" for _n in n])
             _data.append(f"({n})")
-        i_str = f"""
+        return f"""
                 INSERT INTO TABLE 
                     {self.config.database}.{self.config.table}({ks})
                 VALUES
                 {','.join(_data)}
                 """
-        return i_str
 
     def _insert(self, transac: Iterable, column_names: Iterable[str]) -> None:
         _i_str = self._build_istr(transac, column_names)
@@ -252,7 +245,7 @@ class MyScale(VectorStore):
                 if t:
                     t.join()
                 self._insert(transac, keys)
-            return [i for i in ids]
+            return list(ids)
         except Exception as e:
             logger.error(f"\033[91m\033[1m{type(e)}\033[0m \033[95m{str(e)}\033[0m")
             return []
@@ -312,12 +305,8 @@ class MyScale(VectorStore):
         self, q_emb: List[float], topk: int, where_str: Optional[str] = None
     ) -> str:
         q_emb_str = ",".join(map(str, q_emb))
-        if where_str:
-            where_str = f"PREWHERE {where_str}"
-        else:
-            where_str = ""
-
-        q_str = f"""
+        where_str = f"PREWHERE {where_str}" if where_str else ""
+        return f"""
             SELECT {self.config.column_map['text']}, 
                 {self.config.column_map['metadata']}, dist
             FROM {self.config.database}.{self.config.table}
@@ -326,7 +315,6 @@ class MyScale(VectorStore):
                 AS dist {self.dist_order}
             LIMIT {topk}
             """
-        return q_str
 
     def similarity_search(
         self, query: str, k: int = 4, where_str: Optional[str] = None, **kwargs: Any

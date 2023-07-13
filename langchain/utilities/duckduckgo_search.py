@@ -51,8 +51,7 @@ class DuckDuckGoSearchAPIWrapper(BaseModel):
         )
         if results is None or len(results) == 0:
             return ["No good DuckDuckGo Search Result was found"]
-        snippets = [result["body"] for result in results]
-        return snippets
+        return [result["body"] for result in results]
 
     def run(self, query: str) -> str:
         snippets = self.get_snippets(query)

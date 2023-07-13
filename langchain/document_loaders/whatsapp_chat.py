@@ -50,8 +50,9 @@ class WhatsAppChatLoader(BaseLoader):
             (.+)
         """
         for line in lines:
-            result = re.match(message_line_regex, line.strip(), flags=re.VERBOSE)
-            if result:
+            if result := re.match(
+                message_line_regex, line.strip(), flags=re.VERBOSE
+            ):
                 date, sender, text = result.groups()
                 text_content += concatenate_rows(date, sender, text)
 

@@ -53,8 +53,7 @@ class FakeDocstore(Docstore):
 
     def search(self, search: str) -> Union[str, Document]:
         """Return the fake document."""
-        document = Document(page_content=_PAGE_CONTENT)
-        return document
+        return Document(page_content=_PAGE_CONTENT)
 
 
 def test_predict_until_observation_normal() -> None:

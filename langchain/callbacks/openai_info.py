@@ -39,7 +39,7 @@ def standardize_model_name(
     if "ft-" in model_name:
         return model_name.split(":")[0] + "-finetuned"
     elif is_completion and model_name.startswith("gpt-4"):
-        return model_name + "-completion"
+        return f"{model_name}-completion"
     else:
         return model_name
 

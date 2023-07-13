@@ -433,13 +433,12 @@ def _load_llm_requests_chain(config: dict, **kwargs: Any) -> LLMRequestsChain:
         llm_chain = load_chain(config.pop("llm_chain_path"))
     else:
         raise ValueError("One of `llm_chain` or `llm_chain_path` must be present.")
-    if "requests_wrapper" in kwargs:
-        requests_wrapper = kwargs.pop("requests_wrapper")
-        return LLMRequestsChain(
-            llm_chain=llm_chain, requests_wrapper=requests_wrapper, **config
-        )
-    else:
+    if "requests_wrapper" not in kwargs:
         return LLMRequestsChain(llm_chain=llm_chain, **config)
+    requests_wrapper = kwargs.pop("requests_wrapper")
+    return LLMRequestsChain(
+        llm_chain=llm_chain, requests_wrapper=requests_wrapper, **config
+    )
 
 
 type_to_loader_dict = {
@@ -488,10 +487,7 @@ def load_chain(path: Union[str, Path], **kwargs: Any) -> Chain:
 def _load_chain_from_file(file: Union[str, Path], **kwargs: Any) -> Chain:
     """Load chain from file."""
     # Convert file to Path object.
-    if isinstance(file, str):
-        file_path = Path(file)
-    else:
-        file_path = file
+    file_path = Path(file) if isinstance(file, str) else file
     # Load from either json or yaml.
     if file_path.suffix == ".json":
         with open(file_path) as f:

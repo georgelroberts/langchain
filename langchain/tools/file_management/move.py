@@ -52,7 +52,7 @@ class MoveFileTool(BaseFileToolMixin, BaseTool):
             shutil.move(str(source_path_), destination_path_)
             return f"File moved successfully from {source_path} to {destination_path}."
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

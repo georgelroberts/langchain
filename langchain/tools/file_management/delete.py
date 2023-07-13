@@ -41,7 +41,7 @@ class DeleteFileTool(BaseFileToolMixin, BaseTool):
             os.remove(file_path_)
             return f"File deleted successfully: {file_path}."
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

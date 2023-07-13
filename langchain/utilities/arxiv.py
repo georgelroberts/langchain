@@ -78,13 +78,12 @@ class ArxivAPIWrapper(BaseModel):
             ).results()
         except self.arxiv_exceptions as ex:
             return f"Arxiv exception: {ex}"
-        docs = [
+        if docs := [
             f"Published: {result.updated.date()}\nTitle: {result.title}\n"
             f"Authors: {', '.join(a.name for a in result.authors)}\n"
             f"Summary: {result.summary}"
             for result in results
-        ]
-        if docs:
+        ]:
             return "\n\n".join(docs)[: self.doc_content_chars_max]
         else:
             return "No good Arxiv Result was found"

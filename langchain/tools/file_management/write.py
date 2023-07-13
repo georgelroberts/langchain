@@ -47,7 +47,7 @@ class WriteFileTool(BaseFileToolMixin, BaseTool):
                 f.write(text)
             return f"File written successfully to {file_path}."
         except Exception as e:
-            return "Error: " + str(e)
+            return f"Error: {str(e)}"
 
     async def _arun(
         self,

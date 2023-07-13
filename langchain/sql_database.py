@@ -68,15 +68,13 @@ class SQLDatabase:
 
         self._include_tables = set(include_tables) if include_tables else set()
         if self._include_tables:
-            missing_tables = self._include_tables - self._all_tables
-            if missing_tables:
+            if missing_tables := self._include_tables - self._all_tables:
                 raise ValueError(
                     f"include_tables {missing_tables} not found in database"
                 )
         self._ignore_tables = set(ignore_tables) if ignore_tables else set()
         if self._ignore_tables:
-            missing_tables = self._ignore_tables - self._all_tables
-            if missing_tables:
+            if missing_tables := self._ignore_tables - self._all_tables:
                 raise ValueError(
                     f"ignore_tables {missing_tables} not found in database"
                 )
@@ -98,11 +96,11 @@ class SQLDatabase:
                 )
             # only keep the tables that are also present in the database
             intersection = set(self._custom_table_info).intersection(self._all_tables)
-            self._custom_table_info = dict(
-                (table, self._custom_table_info[table])
+            self._custom_table_info = {
+                table: self._custom_table_info[table]
                 for table in self._custom_table_info
                 if table in intersection
-            )
+            }
 
         self._max_string_length = max_string_length
 
@@ -257,8 +255,7 @@ class SQLDatabase:
         """
         all_table_names = self.get_usable_table_names()
         if table_names is not None:
-            missing_tables = set(table_names).difference(all_table_names)
-            if missing_tables:
+            if missing_tables := set(table_names).difference(all_table_names):
                 raise ValueError(f"table_names {missing_tables} not found in database")
             all_table_names = table_names
 
@@ -290,8 +287,7 @@ class SQLDatabase:
             if has_extra_info:
                 table_info += "*/"
             tables.append(table_info)
-        final_str = "\n\n".join(tables)
-        return final_str
+        return "\n\n".join(tables)
 
     def _get_table_indexes(self, table: Table) -> str:
         indexes = self._inspector.get_indexes(table.name)

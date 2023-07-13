@@ -35,7 +35,7 @@ class MotorheadMemory(BaseChatMemory):
                 """
             )
 
-        if is_managed and self.api_key and self.client_id:
+        if is_managed:
             headers["x-metal-api-key"] = self.api_key
             headers["x-metal-client-id"] = self.client_id
 

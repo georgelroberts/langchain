@@ -54,8 +54,7 @@ def lang_chain_tracer_v1(monkeypatch: pytest.MonkeyPatch) -> LangChainTracerV1:
     monkeypatch.setenv("LANGCHAIN_TENANT_ID", "test-tenant-id")
     monkeypatch.setenv("LANGCHAIN_ENDPOINT", "http://test-endpoint.com")
     monkeypatch.setenv("LANGCHAIN_API_KEY", "foo")
-    tracer = LangChainTracerV1()
-    return tracer
+    return LangChainTracerV1()
 
 
 class FakeTracer(BaseTracer):

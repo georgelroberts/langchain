@@ -44,10 +44,7 @@ class YouTubeSearchTool(BaseTool):
         """Use the tool."""
         values = query.split(",")
         person = values[0]
-        if len(values) > 1:
-            num_results = int(values[1])
-        else:
-            num_results = 2
+        num_results = int(values[1]) if len(values) > 1 else 2
         return self._search(person, num_results)
 
     async def _arun(

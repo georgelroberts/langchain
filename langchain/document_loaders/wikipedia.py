@@ -30,5 +30,4 @@ class WikipediaLoader(BaseLoader):
             top_k_results=self.load_max_docs,
             load_all_available_meta=self.load_all_available_meta,
         )
-        docs = client.load(self.query)
-        return docs
+        return client.load(self.query)

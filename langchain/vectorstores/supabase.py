@@ -123,9 +123,7 @@ class SupabaseVectorStore(VectorStore):
     ) -> List[Document]:
         result = self.similarity_search_by_vector_with_relevance_scores(embedding, k)
 
-        documents = [doc for doc, _ in result]
-
-        return documents
+        return [doc for doc, _ in result]
 
     def similarity_search_with_relevance_scores(
         self, query: str, k: int = 4, **kwargs: Any
@@ -139,7 +137,7 @@ class SupabaseVectorStore(VectorStore):
         match_documents_params = dict(query_embedding=query, match_count=k)
         res = self._client.rpc(self.query_name, match_documents_params).execute()
 
-        match_result = [
+        return [
             (
                 Document(
                     metadata=search.get("metadata", {}),  # type: ignore
@@ -151,15 +149,13 @@ class SupabaseVectorStore(VectorStore):
             if search.get("content")
         ]
 
-        return match_result
-
     def similarity_search_by_vector_returning_embeddings(
         self, query: List[float], k: int
     ) -> List[Tuple[Document, float, np.ndarray[np.float32, Any]]]:
         match_documents_params = dict(query_embedding=query, match_count=k)
         res = self._client.rpc(self.query_name, match_documents_params).execute()
 
-        match_result = [
+        return [
             (
                 Document(
                     metadata=search.get("metadata", {}),  # type: ignore
@@ -176,8 +172,6 @@ class SupabaseVectorStore(VectorStore):
             if search.get("content")
         ]
 
-        return match_result
-
     @staticmethod
     def _texts_to_documents(
         texts: Iterable[str],
@@ -187,12 +181,10 @@ class SupabaseVectorStore(VectorStore):
         if metadatas is None:
             metadatas = repeat({})
 
-        docs = [
+        return [
             Document(page_content=text, metadata=metadata)
             for text, metadata in zip(texts, metadatas)
         ]
-
-        return docs
 
     @staticmethod
     def _add_vectors(
@@ -269,9 +261,7 @@ class SupabaseVectorStore(VectorStore):
             lambda_mult=lambda_mult,
         )
 
-        filtered_documents = [matched_documents[i] for i in mmr_selected]
-
-        return filtered_documents
+        return [matched_documents[i] for i in mmr_selected]
 
     def max_marginal_relevance_search(
         self,
@@ -331,7 +321,6 @@ class SupabaseVectorStore(VectorStore):
         ```
         """
         embedding = self._embedding.embed_documents([query])
-        docs = self.max_marginal_relevance_search_by_vector(
+        return self.max_marginal_relevance_search_by_vector(
             embedding[0], k, fetch_k, lambda_mult=lambda_mult
         )
-        return docs

@@ -12,8 +12,7 @@ from langchain.llms import OpenAI
 @pytest.fixture(scope="module")
 def df() -> DataFrame:
     random_data = np.random.rand(4, 4)
-    df = DataFrame(random_data, columns=["name", "age", "food", "sport"])
-    return df
+    return DataFrame(random_data, columns=["name", "age", "food", "sport"])
 
 
 # Figure out type hint here
@@ -23,8 +22,7 @@ def df_list() -> list:
     df1 = DataFrame(random_data, columns=["name", "age", "food", "sport"])
     random_data = np.random.rand(2, 2)
     df2 = DataFrame(random_data, columns=["name", "height"])
-    df_list = [df1, df2]
-    return df_list
+    return [df1, df2]
 
 
 def test_pandas_agent_creation(df: DataFrame) -> None:
@@ -38,7 +36,7 @@ def test_data_reading(df: DataFrame) -> None:
     response = agent.run("how many rows in df? Give me a number.")
     result = re.search(rf".*({df.shape[0]}).*", response)
     assert result is not None
-    assert result.group(1) is not None
+    assert result[1] is not None
 
 
 def test_data_reading_no_df_in_prompt(df: DataFrame) -> None:
@@ -49,7 +47,7 @@ def test_data_reading_no_df_in_prompt(df: DataFrame) -> None:
     response = agent.run("how many rows in df? Give me a number.")
     result = re.search(rf".*({df.shape[0]}).*", response)
     assert result is not None
-    assert result.group(1) is not None
+    assert result[1] is not None
 
 
 def test_multi_df(df_list: list) -> None:
@@ -57,7 +55,7 @@ def test_multi_df(df_list: list) -> None:
     response = agent.run("how many total rows in the two dataframes? Give me a number.")
     result = re.search(r".*(6).*", response)
     assert result is not None
-    assert result.group(1) is not None
+    assert result[1] is not None
 
 
 def test_multi_df_no_df_in_prompt(df_list: list) -> None:
@@ -67,4 +65,4 @@ def test_multi_df_no_df_in_prompt(df_list: list) -> None:
     response = agent.run("how many total rows in the two dataframes? Give me a number.")
     result = re.search(r".*(6).*", response)
     assert result is not None
-    assert result.group(1) is not None
+    assert result[1] is not None

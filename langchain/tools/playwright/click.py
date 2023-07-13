@@ -34,9 +34,7 @@ class ClickTool(BaseBrowserTool):
     """Timeout (in ms) for Playwright to wait for element to be ready."""
 
     def _selector_effective(self, selector: str) -> str:
-        if not self.visible_only:
-            return selector
-        return f"{selector} >> visible=1"
+        return selector if not self.visible_only else f"{selector} >> visible=1"
 
     def _run(
         self,

@@ -326,18 +326,16 @@ class Redis(VectorStore):
         # Perform vector search
         results = self.client.ft(self.index_name).search(redis_query, params_dict)
 
-        # Prepare document results
-        docs = [
+        return [
             (
                 Document(
-                    page_content=result.content, metadata=json.loads(result.metadata)
+                    page_content=result.content,
+                    metadata=json.loads(result.metadata),
                 ),
                 float(result.vector_score),
             )
             for result in results.docs
         ]
-
-        return docs
 
     def _similarity_search_with_relevance_scores(
         self,

@@ -865,65 +865,55 @@ def _configure(
     debug = _get_debug()
     if tracer_session is None:
         tracer_session = "default"
-    if (
-        verbose
-        or debug
-        or tracing_enabled_
-        or tracing_v2_enabled_
-        or wandb_tracing_enabled_
-        or open_ai is not None
-    ):
-        if verbose and not any(
+    if verbose and not any(
             isinstance(handler, StdOutCallbackHandler)
             for handler in callback_manager.handlers
         ):
-            if debug:
-                pass
-            else:
-                callback_manager.add_handler(StdOutCallbackHandler(), False)
-        if debug and not any(
-            isinstance(handler, ConsoleCallbackHandler)
-            for handler in callback_manager.handlers
-        ):
-            callback_manager.add_handler(ConsoleCallbackHandler(), True)
-        if tracing_enabled_ and not any(
-            isinstance(handler, LangChainTracerV1)
-            for handler in callback_manager.handlers
-        ):
-            if tracer:
-                callback_manager.add_handler(tracer, True)
-            else:
-                handler = LangChainTracerV1()
-                handler.load_session(tracer_session)
+        if not debug:
+            callback_manager.add_handler(StdOutCallbackHandler(), False)
+    if debug and not any(
+        isinstance(handler, ConsoleCallbackHandler)
+        for handler in callback_manager.handlers
+    ):
+        callback_manager.add_handler(ConsoleCallbackHandler(), True)
+    if tracing_enabled_ and not any(
+        isinstance(handler, LangChainTracerV1)
+        for handler in callback_manager.handlers
+    ):
+        if tracer:
+            callback_manager.add_handler(tracer, True)
+        else:
+            handler = LangChainTracerV1()
+            handler.load_session(tracer_session)
+            callback_manager.add_handler(handler, True)
+    if wandb_tracing_enabled_ and not any(
+        isinstance(handler, WandbTracer) for handler in callback_manager.handlers
+    ):
+        if wandb_tracer:
+            callback_manager.add_handler(wandb_tracer, True)
+        else:
+            handler = WandbTracer()
+            callback_manager.add_handler(handler, True)
+    if tracing_v2_enabled_ and not any(
+        isinstance(handler, LangChainTracer)
+        for handler in callback_manager.handlers
+    ):
+        if tracer_v2:
+            callback_manager.add_handler(tracer_v2, True)
+        else:
+            try:
+                handler = LangChainTracer(session_name=tracer_session)
                 callback_manager.add_handler(handler, True)
-        if wandb_tracing_enabled_ and not any(
-            isinstance(handler, WandbTracer) for handler in callback_manager.handlers
-        ):
-            if wandb_tracer:
-                callback_manager.add_handler(wandb_tracer, True)
-            else:
-                handler = WandbTracer()
-                callback_manager.add_handler(handler, True)
-        if tracing_v2_enabled_ and not any(
-            isinstance(handler, LangChainTracer)
-            for handler in callback_manager.handlers
-        ):
-            if tracer_v2:
-                callback_manager.add_handler(tracer_v2, True)
-            else:
-                try:
-                    handler = LangChainTracer(session_name=tracer_session)
-                    callback_manager.add_handler(handler, True)
-                except Exception as e:
-                    logger.warning(
-                        "Unable to load requested LangChainTracer."
-                        " To disable this warning,"
-                        " unset the  LANGCHAIN_TRACING_V2 environment variables.",
-                        e,
-                    )
-        if open_ai is not None and not any(
-            isinstance(handler, OpenAICallbackHandler)
-            for handler in callback_manager.handlers
-        ):
-            callback_manager.add_handler(open_ai, True)
+            except Exception as e:
+                logger.warning(
+                    "Unable to load requested LangChainTracer."
+                    " To disable this warning,"
+                    " unset the  LANGCHAIN_TRACING_V2 environment variables.",
+                    e,
+                )
+    if open_ai is not None and not any(
+        isinstance(handler, OpenAICallbackHandler)
+        for handler in callback_manager.handlers
+    ):
+        callback_manager.add_handler(open_ai, True)
     return callback_manager

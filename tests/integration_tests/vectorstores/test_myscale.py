@@ -65,7 +65,7 @@ def test_myscale_with_metadatas_with_relevance_scores() -> None:
 def test_myscale_search_filter() -> None:
     """Test end to end construction and search with metadata filtering."""
     texts = ["far", "bar", "baz"]
-    metadatas = [{"first_letter": "{}".format(text[0])} for text in texts]
+    metadatas = [{"first_letter": f"{text[0]}"} for text in texts]
     config = MyScaleSettings()
     config.table = "test_myscale_search_filter"
     docsearch = MyScale.from_texts(

@@ -12,13 +12,12 @@ from tests.integration_tests.vectorstores.fake_embeddings import FakeEmbeddings
 def deeplake_datastore() -> DeepLake:
     texts = ["foo", "bar", "baz"]
     metadatas = [{"page": str(i)} for i in range(len(texts))]
-    docsearch = DeepLake.from_texts(
+    return DeepLake.from_texts(
         dataset_path="mem://test_path",
         texts=texts,
         metadatas=metadatas,
         embedding=FakeEmbeddings(),
     )
-    return docsearch
 
 
 @pytest.fixture(params=["L1", "L2", "max", "cos"])

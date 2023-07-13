@@ -224,8 +224,7 @@ class ElasticVectorSearch(VectorStore, ABC):
             List of Documents most similar to the query.
         """
         docs_and_scores = self.similarity_search_with_score(query, k, filter=filter)
-        documents = [d[0] for d in docs_and_scores]
-        return documents
+        return [d[0] for d in docs_and_scores]
 
     def similarity_search_with_score(
         self, query: str, k: int = 4, filter: Optional[dict] = None, **kwargs: Any
@@ -242,8 +241,8 @@ class ElasticVectorSearch(VectorStore, ABC):
         response = self.client_search(
             self.client, self.index_name, script_query, size=k
         )
-        hits = [hit for hit in response["hits"]["hits"]]
-        docs_and_scores = [
+        hits = list(response["hits"]["hits"])
+        return [
             (
                 Document(
                     page_content=hit["_source"]["text"],
@@ -253,7 +252,6 @@ class ElasticVectorSearch(VectorStore, ABC):
             )
             for hit in hits
         ]
-        return docs_and_scores
 
     @classmethod
     def from_texts(
@@ -310,13 +308,13 @@ class ElasticVectorSearch(VectorStore, ABC):
     ) -> Any:
         version_num = client.info()["version"]["number"][0]
         version_num = int(version_num)
-        if version_num >= 8:
-            response = client.search(index=index_name, query=script_query, size=size)
-        else:
-            response = client.search(
+        return (
+            client.search(index=index_name, query=script_query, size=size)
+            if version_num >= 8
+            else client.search(
                 index=index_name, body={"query": script_query, "size": size}
             )
-        return response
+        )
 
 
 class ElasticKnnSearch(ElasticVectorSearch):
@@ -366,18 +364,15 @@ class ElasticKnnSearch(ElasticVectorSearch):
         # If a pre-existing Elasticsearch connection is provided, use it.
         if es_connection is not None:
             self.client = es_connection
+        elif es_cloud_id and es_user and es_password:
+            self.client = elasticsearch.Elasticsearch(
+                cloud_id=es_cloud_id, basic_auth=(es_user, es_password)
+            )
         else:
-            # If credentials for a new Elasticsearch connection are provided,
-            # create a new connection.
-            if es_cloud_id and es_user and es_password:
-                self.client = elasticsearch.Elasticsearch(
-                    cloud_id=es_cloud_id, basic_auth=(es_user, es_password)
-                )
-            else:
-                raise ValueError(
-                    """Either provide a pre-existing Elasticsearch connection, \
+            raise ValueError(
+                """Either provide a pre-existing Elasticsearch connection, \
                 or valid credentials for creating a new connection."""
-                )
+            )
 
     @staticmethod
     def _default_knn_mapping(dims: int) -> Dict:

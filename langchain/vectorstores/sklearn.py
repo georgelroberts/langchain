@@ -93,7 +93,7 @@ class ParquetSerializer(BaseSerializer):
         df = self.pd.DataFrame(data)
         table = self.pa.Table.from_pandas(df)
         if os.path.exists(self.persist_path):
-            backup_path = str(self.persist_path) + "-backup"
+            backup_path = f"{str(self.persist_path)}-backup"
             os.rename(self.persist_path, backup_path)
             try:
                 self.pq.write_table(table, self.persist_path)
@@ -328,10 +328,9 @@ class SKLearnVectorStore(VectorStore):
             )
 
         embedding = self._embedding_function.embed_query(query)
-        docs = self.max_marginal_relevance_search_by_vector(
+        return self.max_marginal_relevance_search_by_vector(
             embedding, k, fetch_k, lambda_mul=lambda_mult
         )
-        return docs
 
     @classmethod
     def from_texts(

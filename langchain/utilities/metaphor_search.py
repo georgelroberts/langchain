@@ -92,14 +92,12 @@ class MetaphorSearchAPIWrapper(BaseModel):
         return self._clean_results(results_json["results"])
 
     def _clean_results(self, raw_search_results: List[Dict]) -> List[Dict]:
-        cleaned_results = []
-        for result in raw_search_results:
-            cleaned_results.append(
-                {
-                    "title": result["title"],
-                    "url": result["url"],
-                    "author": result["author"],
-                    "date_created": result["dateCreated"],
-                }
-            )
-        return cleaned_results
+        return [
+            {
+                "title": result["title"],
+                "url": result["url"],
+                "author": result["author"],
+                "date_created": result["dateCreated"],
+            }
+            for result in raw_search_results
+        ]

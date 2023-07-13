@@ -44,8 +44,7 @@ class ConversationKGMemory(BaseChatMemory):
 
         summary_strings = []
         for entity in entities:
-            knowledge = self.kg.get_entity_knowledge(entity)
-            if knowledge:
+            if knowledge := self.kg.get_entity_knowledge(entity):
                 summary = f"On {entity}: {'. '.join(knowledge)}."
                 summary_strings.append(summary)
         context: Union[str, List]
@@ -112,8 +111,7 @@ class ConversationKGMemory(BaseChatMemory):
             input=input_string,
             verbose=True,
         )
-        knowledge = parse_triples(output)
-        return knowledge
+        return parse_triples(output)
 
     def _get_and_update_kg(self, inputs: Dict[str, Any]) -> None:
         """Get and update knowledge graph from the conversation history."""

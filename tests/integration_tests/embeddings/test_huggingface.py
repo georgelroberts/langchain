@@ -53,5 +53,5 @@ def test_huggingface_instructor_embedding_normalize() -> None:
     output = embedding.embed_query(query)
     assert len(output) == 768
     eps = 1e-5
-    norm = sum([o**2 for o in output])
+    norm = sum(o**2 for o in output)
     assert abs(1 - norm) <= eps

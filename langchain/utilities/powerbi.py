@@ -69,7 +69,7 @@ class PowerBIDataset(BaseModel):
         if self.token:
             return {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + self.token,
+                "Authorization": f"Bearer {self.token}",
             }
         from azure.core.exceptions import (
             ClientAuthenticationError,  # pylint: disable=import-outside-toplevel
@@ -80,10 +80,7 @@ class PowerBIDataset(BaseModel):
                 token = self.credential.get_token(
                     "https://analysis.windows.net/powerbi/api/.default"
                 ).token
-                return {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token,
-                }
+                return {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
             except Exception as exc:  # pylint: disable=broad-exception-caught
                 raise ClientAuthenticationError(
                     "Could not get a token from the supplied credentials."
@@ -221,22 +218,20 @@ class PowerBIDataset(BaseModel):
         _LOGGER.debug("Running command: %s", command)
         if self.aiosession:
             async with self.aiosession.post(
-                self.request_url,
-                headers=self.headers,
-                json=self._create_json_content(command),
-                timeout=10,
-            ) as response:
-                response_json = await response.json()
-                return response_json
+                        self.request_url,
+                        headers=self.headers,
+                        json=self._create_json_content(command),
+                        timeout=10,
+                    ) as response:
+                return await response.json()
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                self.request_url,
-                headers=self.headers,
-                json=self._create_json_content(command),
-                timeout=10,
-            ) as response:
-                response_json = await response.json()
-                return response_json
+                        self.request_url,
+                        headers=self.headers,
+                        json=self._create_json_content(command),
+                        timeout=10,
+                    ) as response:
+                return await response.json()
 
 
 def json_to_md(

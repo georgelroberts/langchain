@@ -91,7 +91,7 @@ class JiraAPIWrapper(BaseModel):
         for issue in issues["issues"]:
             key = issue["key"]
             summary = issue["fields"]["summary"]
-            created = issue["fields"]["created"][0:10]
+            created = issue["fields"]["created"][:10]
             priority = issue["fields"]["priority"]["name"]
             status = issue["fields"]["status"]["name"]
             try:
@@ -138,18 +138,12 @@ class JiraAPIWrapper(BaseModel):
     def search(self, query: str) -> str:
         issues = self.jira.jql(query)
         parsed_issues = self.parse_issues(issues)
-        parsed_issues_str = (
-            "Found " + str(len(parsed_issues)) + " issues:\n" + str(parsed_issues)
-        )
-        return parsed_issues_str
+        return f"Found {len(parsed_issues)}" + " issues:\n" + str(parsed_issues)
 
     def project(self) -> str:
         projects = self.jira.projects()
         parsed_projects = self.parse_projects(projects)
-        parsed_projects_str = (
-            "Found " + str(len(parsed_projects)) + " projects:\n" + str(parsed_projects)
-        )
-        return parsed_projects_str
+        return f"Found {len(parsed_projects)}" + " projects:\n" + str(parsed_projects)
 
     def create(self, query: str) -> str:
         try:

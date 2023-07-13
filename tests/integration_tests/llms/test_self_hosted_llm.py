@@ -61,10 +61,9 @@ def load_pipeline() -> Any:
     model_id = "gpt2"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id)
-    pipe = pipeline(
+    return pipeline(
         "text-generation", model=model, tokenizer=tokenizer, max_new_tokens=10
     )
-    return pipe
 
 
 def inference_fn(pipeline: Any, prompt: str, stop: Optional[List[str]] = None) -> str:

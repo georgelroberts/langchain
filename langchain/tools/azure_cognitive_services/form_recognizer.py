@@ -117,15 +117,15 @@ class AzureCogsFormRecognizerTool(BaseTool):
             )
 
         if "tables" in document_analysis_result:
-            for i, table in enumerate(document_analysis_result["tables"]):
-                formatted_result.append(f"Table {i}: {table}".replace("\n", " "))
-
+            formatted_result.extend(
+                f"Table {i}: {table}".replace("\n", " ")
+                for i, table in enumerate(document_analysis_result["tables"])
+            )
         if "key_value_pairs" in document_analysis_result:
-            for kv_pair in document_analysis_result["key_value_pairs"]:
-                formatted_result.append(
-                    f"{kv_pair[0]}: {kv_pair[1]}".replace("\n", " ")
-                )
-
+            formatted_result.extend(
+                f"{kv_pair[0]}: {kv_pair[1]}".replace("\n", " ")
+                for kv_pair in document_analysis_result["key_value_pairs"]
+            )
         return "\n".join(formatted_result)
 
     def _run(
@@ -135,11 +135,11 @@ class AzureCogsFormRecognizerTool(BaseTool):
     ) -> str:
         """Use the tool."""
         try:
-            document_analysis_result = self._document_analysis(query)
-            if not document_analysis_result:
+            if document_analysis_result := self._document_analysis(query):
+                return self._format_document_analysis_result(document_analysis_result)
+            else:
                 return "No good document analysis result was found"
 
-            return self._format_document_analysis_result(document_analysis_result)
         except Exception as e:
             raise RuntimeError(f"Error while running AzureCogsFormRecognizerTool: {e}")
 

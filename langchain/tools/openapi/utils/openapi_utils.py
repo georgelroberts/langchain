@@ -56,10 +56,10 @@ class OpenAPISpec(OpenAPI):
         return self.paths
 
     def _get_path_strict(self, path: str) -> PathItem:
-        path_item = self._paths_strict.get(path)
-        if not path_item:
+        if path_item := self._paths_strict.get(path):
+            return path_item
+        else:
             raise ValueError(f"No path found for {path}")
-        return path_item
 
     @property
     def _components_strict(self) -> Components:
@@ -157,8 +157,6 @@ class OpenAPISpec(OpenAPI):
                     f"Attempting to load an OpenAPI {openapi_version}"
                     f" spec. {warning_message}"
                 )
-            else:
-                pass
         elif isinstance(swagger_version, str):
             logger.warning(
                 f"Attempting to load a Swagger {swagger_version}"

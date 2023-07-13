@@ -37,7 +37,7 @@ def get_prompts(
     params: Dict[str, Any], prompts: List[str]
 ) -> Tuple[Dict[int, List], str, List[int], List[str]]:
     """Get prompts that are already cached."""
-    llm_string = str(sorted([(k, v) for k, v in params.items()]))
+    llm_string = str(sorted(list(params.items())))
     missing_prompts = []
     missing_prompt_idxs = []
     existing_prompts = {}
@@ -101,10 +101,7 @@ class BaseLLM(BaseLanguageModel, ABC):
 
         This allows users to pass in None as verbose to access the global setting.
         """
-        if verbose is None:
-            return _get_verbosity()
-        else:
-            return verbose
+        return _get_verbosity() if verbose is None else verbose
 
     @abstractmethod
     def _generate(
@@ -307,38 +304,26 @@ class BaseLLM(BaseLanguageModel, ABC):
         return result.generations[0][0].text
 
     def predict(self, text: str, *, stop: Optional[Sequence[str]] = None) -> str:
-        if stop is None:
-            _stop = None
-        else:
-            _stop = list(stop)
+        _stop = None if stop is None else list(stop)
         return self(text, stop=_stop)
 
     def predict_messages(
         self, messages: List[BaseMessage], *, stop: Optional[Sequence[str]] = None
     ) -> BaseMessage:
         text = get_buffer_string(messages)
-        if stop is None:
-            _stop = None
-        else:
-            _stop = list(stop)
+        _stop = None if stop is None else list(stop)
         content = self(text, stop=_stop)
         return AIMessage(content=content)
 
     async def apredict(self, text: str, *, stop: Optional[Sequence[str]] = None) -> str:
-        if stop is None:
-            _stop = None
-        else:
-            _stop = list(stop)
+        _stop = None if stop is None else list(stop)
         return await self._call_async(text, stop=_stop)
 
     async def apredict_messages(
         self, messages: List[BaseMessage], *, stop: Optional[Sequence[str]] = None
     ) -> BaseMessage:
         text = get_buffer_string(messages)
-        if stop is None:
-            _stop = None
-        else:
-            _stop = list(stop)
+        _stop = None if stop is None else list(stop)
         content = await self._call_async(text, stop=_stop)
         return AIMessage(content=content)
 
@@ -375,11 +360,7 @@ class BaseLLM(BaseLanguageModel, ABC):
             llm.save(file_path="path/llm.yaml")
         """
         # Convert file to Path object.
-        if isinstance(file_path, str):
-            save_path = Path(file_path)
-        else:
-            save_path = file_path
-
+        save_path = Path(file_path) if isinstance(file_path, str) else file_path
         directory_path = save_path.parent
         directory_path.mkdir(parents=True, exist_ok=True)
 

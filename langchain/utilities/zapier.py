@@ -74,7 +74,7 @@ class ZapierNLAWrapper(BaseModel):
         )
         return Request(
             "POST",
-            self.zapier_nla_api_base + f"exposed/{action_id}/execute/",
+            f"{self.zapier_nla_api_base}exposed/{action_id}/execute/",
             json=data,
         )
 
@@ -123,7 +123,7 @@ class ZapierNLAWrapper(BaseModel):
         https://nla.zapier.com/api/v1/docs)
         """
         session = self._get_session()
-        response = session.get(self.zapier_nla_api_base + "exposed/")
+        response = session.get(f"{self.zapier_nla_api_base}exposed/")
         response.raise_for_status()
         return response.json()["results"]
 

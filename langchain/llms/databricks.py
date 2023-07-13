@@ -310,7 +310,7 @@ class Databricks(LLM):
 
         request = {"prompt": prompt, "stop": stop}
         if self.model_kwargs:
-            request.update(self.model_kwargs)
+            request |= self.model_kwargs
 
         if self.transform_input_fn:
             request = self.transform_input_fn(**request)
